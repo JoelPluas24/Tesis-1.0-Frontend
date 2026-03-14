@@ -1,0 +1,129 @@
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <a routerLink="/admin/ejercicios"
+            class="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors font-medium mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Volver a la Biblioteca
+        </a>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight">{{ id ? 'Editar Ejercicio' : 'Nuevo Ejercicio' }}
+        </h2>
+        <p class="text-slate-500 font-medium mt-1">
+            {{ id ? 'Modifica las instrucciones y los apoyos visuales de este ejercicio.' : 'Añade una nueva técnica,
+            movimiento o ejercicio a la biblioteca global.' }}
+        </p>
+    </div>
+</div>
+
+<div *ngIf="cargando" class="flex flex-col items-center justify-center py-20 px-6">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 font-medium">Cargando datos del ejercicio...</p>
+</div>
+
+<div *ngIf="!cargando" class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+        <!-- Header -->
+        <div class="bg-indigo-600 px-8 py-5 flex items-center gap-3 text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+            </svg>
+            <h3 class="font-bold text-lg">Información del Ejercicio</h3>
+        </div>
+
+        <div class="p-8">
+            <div class="space-y-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Nombre del Ejercicio <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" [(ngModel)]="ejercicio.nombre" name="nombre"
+                            placeholder="Ej. Extensión de rodilla con banda elástica"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-slate-400 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Nivel de Dificultad</label>
+                        <select [(ngModel)]="ejercicio.nivel_dificultad" name="nivel_dificultad"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium transition-all">
+                            <option value="BAJO">Bajo</option>
+                            <option value="MEDIO">Medio</option>
+                            <option value="ALTO">Alto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-700 text-sm font-bold mb-2">Descripción General</label>
+                    <textarea [(ngModel)]="ejercicio.descripcion" name="descripcion" rows="3"
+                        placeholder="Resumen corto del ejercicio"
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-slate-400 resize-none font-medium"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-2 text-emerald-600">Indicaciones
+                            Step-by-Step</label>
+                        <textarea [(ngModel)]="ejercicio.indicaciones" name="indicaciones" rows="4"
+                            placeholder="1. Siéntese... 2. Eleve la pierna..."
+                            class="w-full bg-emerald-50/30 border border-emerald-200 text-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none placeholder-slate-400 resize-none font-medium"></textarea>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-slate-700 text-sm font-bold mb-2 text-rose-600">Contraindicaciones</label>
+                        <textarea [(ngModel)]="ejercicio.contraindicaciones" name="contraindicaciones" rows="4"
+                            placeholder="No realizar si hay dolor punzante."
+                            class="w-full bg-rose-50/30 border border-rose-200 text-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-rose-500 focus:outline-none placeholder-slate-400 resize-none font-medium"></textarea>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100">
+                    <label class="block text-slate-700 text-sm font-bold mb-2 flex flex-row items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 text-indigo-500">
+                            <path stroke-linecap="round"
+                                d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        Enlace a Video Demostrativo (Opcional)
+                    </label>
+                    <p class="text-slate-500 text-xs mb-3">Enlace de YouTube/Vimeo para que el paciente vea la
+                        ejecución.</p>
+                    <input type="text" [(ngModel)]="ejercicio.video_url" name="video_url"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-slate-400 font-medium">
+                </div>
+
+            </div>
+
+            <div class="mt-8 flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+                <a routerLink="/admin/ejercicios"
+                    class="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                    Cancelar
+                </a>
+                <button (click)="guardar()" [disabled]="guardando"
+                    class="px-8 py-3 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg *ngIf="guardando" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <svg *ngIf="!guardando" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    {{ guardando ? 'Guardando en la Biblioteca...' : (id ? 'Actualizar Ejercicio' : 'Crear Ejercicio')
+                    }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

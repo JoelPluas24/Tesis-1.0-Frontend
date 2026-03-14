@@ -1,0 +1,295 @@
+<div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Directorio de Pacientes</h2>
+        <p class="text-slate-500 font-medium mt-1">Gestión integral e historial del personal de rehabilitación</p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+        <!-- Floating Assignment Banner (Only visible when >0 selected) -->
+        <button *ngIf="pacientesSeleccionados.size > 0" (click)="abrirModalAsignacion()"
+            class="animate-fade-in-up bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.66-1.546" />
+            </svg>
+            Asignar Especialista ({{ pacientesSeleccionados.size }})
+        </button>
+
+        <a routerLink="/admin/pacientes/crear"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Nuevo Paciente
+        </a>
+    </div>
+</div>
+
+<div *ngIf="cargando" class="flex flex-col items-center justify-center py-20 px-6">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 font-medium">Cargando directorio de pacientes...</p>
+</div>
+
+<div *ngIf="!cargando" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-sm">
+                    <th class="py-4 px-6 font-semibold w-12">
+                        <input type="checkbox"
+                            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            [checked]="todosSeleccionados()" (change)="toggleSeleccionTodos($event)">
+                    </th>
+                    <th class="py-4 px-6 font-semibold">Perfil del Paciente</th>
+                    <th class="py-4 px-6 font-semibold">Contacto</th>
+                    <th class="py-4 px-6 font-semibold">Estado</th>
+                    <th class="py-4 px-6 font-semibold text-right">Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-600">
+                <tr *ngFor="let paciente of pacientes" [class.bg-blue-50]="estaSeleccionado(paciente.id)"
+                    class="hover:bg-slate-50/80 transition-colors group">
+                    <td class="py-4 px-6">
+                        <input type="checkbox"
+                            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            [checked]="estaSeleccionado(paciente.id)" (change)="toggleSeleccion(paciente.id)">
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 border border-blue-200 font-bold uppercase shrink-0">
+                                {{ paciente.nombres.charAt(0) }}{{ paciente.apellidos.charAt(0) }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">{{ paciente.nombres }} {{ paciente.apellidos }}</p>
+                                <p class="text-xs text-slate-500">ID: {{ paciente.id || 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <p class="text-slate-600 font-medium">{{ paciente.email }}</p>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Activo
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <!-- Botón Editar -->
+                            <button (click)="abrirModalEdicion(paciente)"
+                                class="text-slate-400 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-blue-50"
+                                title="Editar Información">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                </svg>
+                            </button>
+                            <!-- Botón Dar de Baja -->
+                            <button (click)="eliminarPaciente(paciente.id)"
+                                class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50"
+                                title="Dar de Baja (Alta Médica/Inactivar)">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="pacientes.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-8 h-8 text-slate-400">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+        </div>
+        <p class="text-slate-500 font-medium">Aún no hay pacientes registrados en el sistema.</p>
+    </div>
+</div>
+
+<!-- Modal de Edición de Pacientes -->
+<div *ngIf="mostrarModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop oscuro -->
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" (click)="cerrarModal()"></div>
+
+    <!-- Contenido del Modal -->
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-auto overflow-hidden animate-fade-in-up">
+
+        <!-- Header -->
+        <div class="bg-blue-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="font-bold text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+                Editar Expediente
+            </h3>
+            <button (click)="cerrarModal()" class="text-white/70 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Cuerpo (Formulario) -->
+        <div class="px-6 py-6">
+            <form (ngSubmit)="guardarEdicion()">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-1.5">Nombres</label>
+                        <input type="text" [(ngModel)]="pacienteForm.nombres" name="nombres"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-1.5">Apellidos</label>
+                        <input type="text" [(ngModel)]="pacienteForm.apellidos" name="apellidos"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            required>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-slate-700 text-sm font-bold mb-1.5">Correo Electrónico</label>
+                    <input type="email" [(ngModel)]="pacienteForm.email" name="email"
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        required>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-1.5">Edad</label>
+                        <input type="number" [(ngModel)]="pacienteForm.edad" name="edad"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            required min="1">
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-1.5">Género</label>
+                        <select [(ngModel)]="pacienteForm.genero" name="genero"
+                            class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            required>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-slate-700 text-sm font-bold mb-1.5">Dirección / Ref</label>
+                    <input type="text" [(ngModel)]="pacienteForm.direccion" name="direccion"
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        required>
+                </div>
+
+                <!-- Footer Acciones -->
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" (click)="cerrarModal()"
+                        class="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                        Descartar Moficaciones
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-colors flex items-center gap-2">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Asignación Masiva a Fisioterapia -->
+<div *ngIf="mostrarModalAsignacion" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop oscuro -->
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" (click)="cerrarModalAsignacion()"></div>
+
+    <!-- Contenido del Modal -->
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden animate-fade-in-up">
+
+        <!-- Header -->
+        <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="font-bold text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.66-1.546" />
+                </svg>
+                Asignación Clínica
+            </h3>
+            <button (click)="cerrarModalAsignacion()" [disabled]="enviandoAsignacion"
+                class="text-white/70 hover:text-white transition-colors disabled:opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Cuerpo (Formulario) -->
+        <div class="px-6 py-6 border-b border-slate-100 bg-slate-50/50">
+            <p class="text-sm font-medium text-slate-600 mb-1">Has seleccionado a</p>
+            <p class="text-2xl font-black text-indigo-900 mb-4">{{ pacientesSeleccionados.size }} Paciente(s)</p>
+
+            <label class="block text-slate-700 text-sm font-bold mb-2">Seleccione un Fisioterapeuta Revisor</label>
+            <div class="relative">
+                <select [(ngModel)]="fisioterapeutaSeleccionado"
+                    class="w-full bg-white border border-slate-300 text-slate-800 rounded-lg px-4 py-3 appearance-none focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm font-medium">
+                    <option [ngValue]="null" disabled selected>-- Elige un Especialista --</option>
+                    <option *ngFor="let fisio of fisioterapeutas" [ngValue]="fisio.id">
+                        Dr. {{ fisio.nombres }} {{ fisio.apellidos }} ({{ fisio.especialidad }})
+                    </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            <p *ngIf="fisioterapeutas.length === 0" class="text-xs text-red-500 mt-2 font-medium">No hay fisioterapeutas
+                activos en la clínica.</p>
+        </div>
+
+        <!-- Footer Acciones -->
+        <div class="flex items-center justify-end gap-3 px-6 py-4 bg-white">
+            <button type="button" (click)="cerrarModalAsignacion()" [disabled]="enviandoAsignacion"
+                class="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50">
+                Cancelar
+            </button>
+            <button type="button" (click)="confirmarAsignacionMasiva()"
+                [disabled]="!fisioterapeutaSeleccionado || enviandoAsignacion"
+                class="px-5 py-2.5 rounded-xl font-bold text-white shadow-md transition-colors flex items-center gap-2"
+                [ngClass]="(!fisioterapeutaSeleccionado || enviandoAsignacion) ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'">
+                <ng-container *ngIf="enviandoAsignacion">
+                    <svg class="animate-spin -ml-1 mr-1 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    Asignando...
+                </ng-container>
+                <ng-container *ngIf="!enviandoAsignacion">
+                    Confirmar Asignación
+                </ng-container>
+            </button>
+        </div>
+    </div>
+</div>

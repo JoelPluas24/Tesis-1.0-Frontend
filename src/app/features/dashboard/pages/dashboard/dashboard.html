@@ -1,0 +1,172 @@
+<div class="min-h-screen bg-gray-50 p-8">
+
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">
+            ¡Bienvenido, {{usuario?.nombres}}!
+        </h1>
+        <p class="mt-2 text-gray-500 text-sm uppercase tracking-wide font-semibold">
+            Panel de Control: {{usuario?.rol}}
+        </p>
+    </div>
+
+    <!-- VISTA EXCLUSIVA DEL ADMINISTRADOR -->
+    <div *ngIf="usuario?.rol === 'ADMIN'">
+
+        <div *ngIf="cargandoReporte" class="text-gray-500 py-6">
+            Cargando estadísticas de la plataforma...
+        </div>
+
+        <div *ngIf="reporte && !cargandoReporte" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- TARJETA PACIENTES -->
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between transition-transform hover:-translate-y-1">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium mb-1 truncate">Pacientes en Sistema</p>
+                    <p class="text-3xl font-black text-gray-800">{{ reporte.total_pacientes }}</p>
+                </div>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- TARJETA FISIOS -->
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between transition-transform hover:-translate-y-1">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium mb-1 truncate">Fisioterapeutas</p>
+                    <p class="text-3xl font-black text-gray-800">{{ reporte.total_fisioterapeutas }}</p>
+                </div>
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11.412 15.655L9.75 21.75l3.745-4.012M9.257 13.5H3.75l2.659-2.849m2.048-2.194L14.25 2.25 12 10.5h8.25l-4.707 5.043M8.457 8.457L3 3m5.457 5.457l7.086 7.086m0 0L21 21" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- TARJETA RUTINAS -->
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between transition-transform hover:-translate-y-1">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium mb-1 truncate">Rutinas Activas</p>
+                    <p class="text-3xl font-black text-gray-800">{{ reporte.rutinas_activas }}</p>
+                </div>
+                <div class="p-3 bg-red-50 text-red-600 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- TARJETA CUMPLIMIENTO -->
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between transition-transform hover:-translate-y-1">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium mb-1 truncate">Total Ejer. Completados</p>
+                    <p class="text-3xl font-black text-green-600">{{ reporte.ejercicios_realizados }}</p>
+                </div>
+                <div class="p-3 bg-green-50 text-green-600 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN DE GRÁFICOS ANALÍTICOS -->
+        <div *ngIf="reporte && !cargandoReporte" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+
+            <!-- Gráfico: Distribución de Usuarios -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-700 mb-4">Distribución de Usuarios</h3>
+                <div class="flex justify-center items-center h-64">
+                    <canvas baseChart [data]="userChartData" [options]="userChartOptions" [type]="userChartType">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico: Actividad Clínica -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-700 mb-4">Actividad Clínica Global</h3>
+                <div class="flex justify-center items-center h-64">
+                    <canvas baseChart [data]="activityChartData" [options]="activityChartOptions"
+                        [type]="activityChartType">
+                    </canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- VISTA EXCLUSIVA DEL PACIENTE -->
+    <div *ngIf="usuario?.rol === 'PACIENTE'">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="bg-blue-600 rounded-3xl p-8 text-white shadow-lg overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+                <div class="relative z-10 h-full flex flex-col">
+                    <h2 class="text-3xl font-black mb-2">Tu Rehabilitación</h2>
+                    <p class="text-blue-100 mb-8 max-w-sm">
+                        El compromiso diario es la clave de tu recuperación. Sigue el plan diseñado por tus fisioterapeutas.
+                    </p>
+                    
+                    <div class="mt-auto">
+                        <a routerLink="/paciente/mi-rutina" class="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-md">
+                            Ir a Mi Rutina de Hoy
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col justify-center">
+                <div *ngIf="reporte?.tieneRutina" class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-xl mb-1">Plan Activo</h3>
+                    <p class="text-gray-500 mb-4">Tienes un protocolo terapéutico en curso.</p>
+                    <div class="w-full bg-gray-50 rounded-xl p-4 flex justify-between items-center px-6 border border-gray-100">
+                        <div class="text-left">
+                            <p class="text-xs uppercase text-gray-400 font-bold tracking-wider">Inicio</p>
+                            <p class="font-bold text-gray-700">{{ reporte.fecha_inicio | date:'shortDate' }}</p>
+                        </div>
+                        <div class="h-10 w-px bg-gray-200"></div>
+                        <div class="text-right">
+                            <p class="text-xs uppercase text-gray-400 font-bold tracking-wider">Ejercicios</p>
+                            <p class="font-bold text-gray-700">{{ reporte.total_ejercicios }} Asignados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="!reporte?.tieneRutina" class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-xl mb-1">A la espera de un Plan</h3>
+                    <p class="text-gray-500 max-w-xs">Tu equipo de fisioterapeutas te asignará una rutina de ejercicios en breve.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

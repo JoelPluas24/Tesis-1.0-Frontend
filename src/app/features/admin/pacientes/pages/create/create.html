@@ -1,0 +1,19 @@
+<h2 class="text-2xl font-bold mb-4">Crear Paciente</h2>
+
+<form (ngSubmit)="crear()" class="space-y-4 max-w-md">
+
+    <input [(ngModel)]="nombres" name="nombres" placeholder="Nombres" class="w-full p-2 border rounded" required />
+
+    <input [(ngModel)]="apellidos" name="apellidos" placeholder="Apellidos" class="w-full p-2 border rounded"
+        required />
+
+    <input [(ngModel)]="email" name="email" placeholder="Email" class="w-full p-2 border rounded" required />
+
+    <input [(ngModel)]="password" name="password" type="password" placeholder="Password"
+        class="w-full p-2 border rounded" required />
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+        Crear Paciente
+    </button>
+
+</form>
