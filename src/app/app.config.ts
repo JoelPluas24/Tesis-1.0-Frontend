@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { responseInterceptor } from './core/interceptors/response.interceptor';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
@@ -11,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, responseInterceptor])
     ),
     provideCharts(withDefaultRegisterables())
   ]

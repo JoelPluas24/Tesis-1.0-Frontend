@@ -15,11 +15,23 @@ export class PacienteService {
     }
 
     obtenerMisEjerciciosAcumulados(paciente_id: number) {
-        return this.http.get(`${this.API}/rutinas/paciente/${paciente_id}/ejercicios`);
+        const d = new Date();
+        const fecha_local = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+        return this.http.get(`${this.API}/rutinas/paciente/${paciente_id}/ejercicios?fecha_local=${fecha_local}`);
     }
 
     registrarCumplimiento(ejercicio_id: number) {
-        return this.http.post(`${this.API}/cumplimiento`, { ejercicio_id });
+        const d = new Date();
+        const fecha_local = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+        return this.http.post(`${this.API}/cumplimiento`, { ejercicio_id, fecha_local });
+    }
+
+    obtenerMiProgreso(paciente_id: number) {
+        return this.http.get(`${this.API}/cumplimiento/progreso/${paciente_id}`);
+    }
+
+    obtenerHistorial(paciente_id: number) {
+        return this.http.get(`${this.API}/cumplimiento/historial/${paciente_id}`);
     }
 
 }

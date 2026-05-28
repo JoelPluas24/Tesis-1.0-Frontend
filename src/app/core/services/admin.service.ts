@@ -37,6 +37,16 @@ export class AdminService {
         return this.http.put(`${this.API}/pacientes/${id}`, data);
     }
 
+    // Listar Pacientes Inactivos
+    obtenerPacientesInactivos() {
+        return this.http.get(`${this.API}/pacientes-inactivos`);
+    }
+
+    // Reactivar Paciente
+    reactivarPaciente(id: number) {
+        return this.http.put(`${this.API}/pacientes/${id}/reactivar`, {});
+    }
+
     // Eliminar Paciente (Baja lógica)
     eliminarPaciente(id: number) {
         return this.http.delete(`${this.API}/pacientes/${id}`);

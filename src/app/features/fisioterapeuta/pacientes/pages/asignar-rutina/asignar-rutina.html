@@ -10,8 +10,9 @@
 </div>
 
 <div class="mb-8">
-    <h2 class="text-3xl font-black text-slate-800 tracking-tight">Planificación de Rutina</h2>
-    <p class="text-slate-500 font-medium mt-1">Diseñe y asigne un conjunto de ejercicios personalizados</p>
+    <h2 class="text-3xl font-black text-slate-800 tracking-tight">Administración de Plan Físico para {{
+        pacienteInfo?.nombres }} {{ pacienteInfo?.apellidos }}</h2>
+    <p class="text-slate-500 font-medium mt-1">Diseñe y administre el conjunto de ejercicios personalizados</p>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -33,10 +34,17 @@
             </div>
 
             <div class="space-y-5">
-                <div>
-                    <label class="block text-slate-700 text-sm font-bold mb-2">Fecha de Inicio Estimada</label>
-                    <input type="date" [(ngModel)]="fechaInicio"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700" />
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Fecha de Inicio</label>
+                        <input type="date" [(ngModel)]="fechaInicio"
+                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700" />
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Fecha Fin</label>
+                        <input type="date" [(ngModel)]="fechaFin"
+                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700" />
+                    </div>
                 </div>
                 <div>
                     <label class="block text-slate-700 text-sm font-bold mb-2">Indicaciones Clínicas</label>
@@ -70,13 +78,11 @@
                     <select [(ngModel)]="ejercicioSeleccionadoId"
                         class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700 shadow-sm font-medium">
                         <option value="">-- Examinar biblioteca de ejercicios --</option>
-                        
-                        <optgroup label="Sugeridos para el diagnóstico" *ngIf="ejerciciosRecomendados.length > 0">
+                        <optgroup label="Recomendados (Según Patología/Fase)">
                             <option *ngFor="let ej of ejerciciosRecomendados" [value]="ej.id">
-                                ★ {{ ej.nombre }} (Recomendado)
+                                {{ ej.nombre }}
                             </option>
                         </optgroup>
-
                         <optgroup label="Catálogo General">
                             <option *ngFor="let ej of todosLosEjercicios" [value]="ej.id">
                                 {{ ej.nombre }}
@@ -124,7 +130,7 @@
     </div>
 
     <!-- COLUMNA DERECHA: VISTA PREVIA DE LA RUTINA -->
-    <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky top-24">
+    <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
 
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-bold text-slate-800">Resumen del Plan</h3>
@@ -166,14 +172,25 @@
             </li>
         </ul>
 
-        <button *ngIf="ejerciciosAgregados.length > 0" (click)="guardarRutina()"
-            class="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 text-base rounded-xl shadow-md shadow-blue-200 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-            Confirmar y Asignar Rutina
-        </button>
+        <div class="flex gap-4 w-full">
+            <button *ngIf="rutinaActualId" (click)="eliminarRutina()"
+                class="w-1/3 flex justify-center items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 font-bold py-3.5 px-4 text-base rounded-xl transition-all border border-red-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+                Eliminar
+            </button>
+            <button *ngIf="ejerciciosAgregados.length > 0" (click)="guardarRutina()"
+                class="flex-1 flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 text-base rounded-xl shadow-md shadow-blue-200 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                {{ rutinaActualId ? 'Guardar Cambios' : 'Confirmar y Asignar Rutina' }}
+            </button>
+        </div>
 
     </div>
 

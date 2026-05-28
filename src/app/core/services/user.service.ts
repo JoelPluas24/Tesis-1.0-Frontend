@@ -11,4 +11,7 @@ export class UserService {
         return this.http.get(`${this.API}/users/perfil`);
     }
 
+    cambiarPassword(currentPassword: string, newPassword: string) {
+        return this.http.put(`${this.API}/users/cambiar-password`, { currentPassword, newPassword });
+    }
 }

@@ -11,12 +11,24 @@ export class FisioterapeutaService {
         return this.http.get(`${this.API}/mis-pacientes`);
     }
 
+    obtenerReporteFisioterapeuta() {
+        return this.http.get(`${this.API}/reporte`);
+    }
+
     obtenerRutinaActiva(paciente_id: number) {
         return this.http.get(`http://localhost:3000/api/rutinas/activa/${paciente_id}`);
     }
 
     obtenerEjerciciosTotalesPaciente(paciente_id: number) {
         return this.http.get(`http://localhost:3000/api/rutinas/paciente/${paciente_id}/ejercicios`);
+    }
+
+    obtenerHistorialRutinas(paciente_id: number) {
+        return this.http.get(`http://localhost:3000/api/rutinas/historial/${paciente_id}`);
+    }
+
+    obtenerEjerciciosPorRutina(rutina_id: number) {
+        return this.http.get(`http://localhost:3000/api/rutinas/${rutina_id}/ejercicios`);
     }
 
     obtenerProgreso(paciente_id: number) {
@@ -29,6 +41,14 @@ export class FisioterapeutaService {
 
     crearRutina(data: any) {
         return this.http.post('http://localhost:3000/api/rutinas', data);
+    }
+
+    editarRutina(rutina_id: number, data: any) {
+        return this.http.put(`http://localhost:3000/api/rutinas/${rutina_id}`, data);
+    }
+
+    eliminarRutina(rutina_id: number) {
+        return this.http.delete(`http://localhost:3000/api/rutinas/${rutina_id}`);
     }
 
     obtenerTodosLosEjercicios() {
@@ -45,5 +65,9 @@ export class FisioterapeutaService {
 
     asignarPatologiasPaciente(paciente_id: number, patologia_ids: number[]) {
         return this.http.post(`${this.API}/pacientes/${paciente_id}/patologias`, { patologia_ids });
+    }
+
+    asignarFasePaciente(paciente_id: number, fase_recuperacion: string) {
+        return this.http.put(`${this.API}/pacientes/${paciente_id}/fase`, { fase_recuperacion });
     }
 }

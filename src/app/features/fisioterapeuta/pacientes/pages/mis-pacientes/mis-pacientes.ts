@@ -11,6 +11,14 @@ import { RouterLink } from '@angular/router';
 })
 export class MisPacientes implements OnInit {
   pacientes: any[] = [];
+  
+  // Modal de Historial Clínico
+  showModal: boolean = false;
+  pacienteSeleccionado: any = null;
+  historialRutinas: any[] = [];
+  rutinaHistoricaSeleccionada: any = null;
+  ejerciciosHistoricos: any[] = [];
+  patologiaActual: any = null;
 
   constructor(private fisioService: FisioterapeutaService) { }
 
@@ -22,6 +30,42 @@ export class MisPacientes implements OnInit {
       error: (err) => {
         console.error(err);
       }
+    });
+  }
+
+  abrirHistorial(paciente: any) {
+    this.pacienteSeleccionado = paciente;
+    this.showModal = true;
+    this.historialRutinas = [];
+
+    // Obtener rutinas históricas
+    this.fisioService.obtenerHistorialRutinas(paciente.id).subscribe({
+      next: (res: any) => {
+        this.historialRutinas = (res.data?.historial || res.historial || []).filter((r: any) => r.activa === 0);
+      },
+      error: (err) => console.error("Error cargando historial de rutinas", err)
+    });
+  }
+
+  cerrarHistorial() {
+    this.showModal = false;
+    this.pacienteSeleccionado = null;
+    this.rutinaHistoricaSeleccionada = null;
+    this.ejerciciosHistoricos = [];
+  }
+
+  verDetallesHistoricos(rutina: any) {
+    if (this.rutinaHistoricaSeleccionada?.id === rutina.id) {
+       this.rutinaHistoricaSeleccionada = null;
+       this.ejerciciosHistoricos = [];
+       return;
+    }
+    this.rutinaHistoricaSeleccionada = rutina;
+    this.fisioService.obtenerEjerciciosPorRutina(rutina.id).subscribe({
+      next: (res: any) => {
+        this.ejerciciosHistoricos = res.data || res;
+      },
+      error: (err) => console.error("Error obteniendo ejercicios históricos", err)
     });
   }
 }

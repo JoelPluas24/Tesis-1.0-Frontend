@@ -14,23 +14,21 @@ export class FisioCreate {
   nombres = '';
   apellidos = '';
   email = '';
-  especialidad = '';
   telefono = '';
   password = '';
 
   constructor(
     private adminService: AdminService,
-    private router: Router
-  ) { }
+    private router: Router,
+  ) {}
 
   crear() {
     const data = {
       nombres: this.nombres,
       apellidos: this.apellidos,
       email: this.email,
-      //especialidad: this.especialidad,
       telefono: this.telefono,
-      password: this.password
+      password: this.password,
     };
 
     this.adminService.crearFisioterapeuta(data).subscribe({
@@ -41,7 +39,7 @@ export class FisioCreate {
       error: (err) => {
         console.error(err);
         alert('Error al crear');
-      }
+      },
     });
   }
 }

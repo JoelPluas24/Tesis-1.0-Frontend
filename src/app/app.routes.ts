@@ -6,123 +6,119 @@ import { FisioCreate } from './features/admin/fisioterapeutas/pages/create/creat
 import { FisioterapeutasList } from './features/admin/fisioterapeutas/pages/list/list';
 import { MisPacientes } from './features/fisioterapeuta/pacientes/pages/mis-pacientes/mis-pacientes';
 
-
-
 export const routes: Routes = [
+  // REDIRECCIÓN INICIAL
+  {
+    path: '',
+    redirectTo: 'auth/login',
+    pathMatch: 'full',
+  },
 
   // AUTH
   {
     path: 'auth/login',
-    loadComponent: () =>
-      import('./features/auth/pages/login/login')
-        .then(m => m.Login)
+    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
 
   {
     path: 'auth/register',
-    loadComponent: () =>
-      import('./features/auth/pages/register/register')
-        .then(m => m.Register)
+    loadComponent: () => import('./features/auth/pages/register/register').then((m) => m.Register),
   },
 
   // APP PROTEGIDA
   {
     path: '',
     loadComponent: () =>
-      import('./shared/layouts/main-layout/main-layout')
-        .then(m => m.MainLayout),
+      import('./shared/layouts/main-layout/main-layout').then((m) => m.MainLayout),
     canActivate: [authGuard],
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./features/dashboard/pages/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard')
-            .then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
         path: 'paciente/mi-rutina',
         loadComponent: () =>
-          import('./features/paciente/mi-rutina/mi-rutina')
-            .then(m => m.MiRutina)
+          import('./features/paciente/mi-rutina/mi-rutina').then((m) => m.MiRutina),
       },
       {
         path: 'fisioterapeuta/mis-pacientes',
         loadComponent: () =>
-          import('./features/fisioterapeuta/pacientes/pages/mis-pacientes/mis-pacientes')
-            .then(m => m.MisPacientes)
+          import('./features/fisioterapeuta/pacientes/pages/mis-pacientes/mis-pacientes').then(
+            (m) => m.MisPacientes,
+          ),
       },
       {
         path: 'fisioterapeuta/pacientes/:id',
         loadComponent: () =>
-          import('./features/fisioterapeuta/pacientes/pages/detalle/detalle')
-            .then(m => m.DetallePaciente)
+          import('./features/fisioterapeuta/pacientes/pages/detalle/detalle').then(
+            (m) => m.DetallePaciente,
+          ),
       },
       {
         path: 'fisioterapeuta/pacientes/:id/asignar-rutina',
         loadComponent: () =>
-          import('./features/fisioterapeuta/pacientes/pages/asignar-rutina/asignar-rutina')
-            .then(m => m.AsignarRutina)
+          import('./features/fisioterapeuta/pacientes/pages/asignar-rutina/asignar-rutina').then(
+            (m) => m.AsignarRutina,
+          ),
       },
       {
         path: 'admin/pacientes',
-        component: PacientesList
+        component: PacientesList,
+      },
+      {
+        path: 'admin/pacientes/inactivos',
+        loadComponent: () =>
+          import('./features/admin/pacientes/pages/inactivos/inactivos').then((m) => m.Inactivos),
       },
       {
         path: 'admin/pacientes/crear',
-        component: PacienteCreate
+        component: PacienteCreate,
       },
       {
         path: 'admin/fisioterapeutas',
-        component: FisioterapeutasList
+        component: FisioterapeutasList,
       },
       {
         path: 'admin/fisioterapeutas/crear',
-        component: FisioCreate
+        component: FisioCreate,
       },
       {
         path: 'admin/patologias',
         loadComponent: () =>
-          import('./features/admin/patologias/pages/list/list')
-            .then(m => m.List)
+          import('./features/admin/patologias/pages/list/list').then((m) => m.List),
       },
       {
         path: 'admin/patologias/crear',
         loadComponent: () =>
-          import('./features/admin/patologias/pages/form/form')
-            .then(m => m.Form)
+          import('./features/admin/patologias/pages/form/form').then((m) => m.Form),
       },
       {
         path: 'admin/patologias/editar/:id',
         loadComponent: () =>
-          import('./features/admin/patologias/pages/form/form')
-            .then(m => m.Form)
+          import('./features/admin/patologias/pages/form/form').then((m) => m.Form),
       },
       {
         path: 'admin/ejercicios',
         loadComponent: () =>
-          import('./features/admin/ejercicios/pages/list/list')
-            .then(m => m.List)
+          import('./features/admin/ejercicios/pages/list/list').then((m) => m.List),
       },
       {
         path: 'admin/ejercicios/crear',
         loadComponent: () =>
-          import('./features/admin/ejercicios/pages/form/form')
-            .then(m => m.Form)
+          import('./features/admin/ejercicios/pages/form/form').then((m) => m.Form),
       },
       {
         path: 'admin/ejercicios/editar/:id',
         loadComponent: () =>
-          import('./features/admin/ejercicios/pages/form/form')
-            .then(m => m.Form)
-      }
-    ]
+          import('./features/admin/ejercicios/pages/form/form').then((m) => m.Form),
+      },
+    ],
   },
-
-  // DEFAULT
-  {
-    path: '',
-    redirectTo: 'auth/login',
-    pathMatch: 'full'
-  }
-
 ];

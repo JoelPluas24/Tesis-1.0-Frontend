@@ -12,6 +12,17 @@
     <input [(ngModel)]="password" name="password" type="password" placeholder="Password"
         class="w-full p-2 border rounded" required />
 
+    <div class="grid grid-cols-2 gap-4">
+        <input [(ngModel)]="edad" name="edad" type="number" placeholder="Edad" class="w-full p-2 border rounded" required />
+        <select [(ngModel)]="genero" name="genero" class="w-full p-2 border rounded" required>
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMENINO">Femenino</option>
+            <option value="OTRO">Otro</option>
+        </select>
+    </div>
+
+    <textarea [(ngModel)]="direccion" name="direccion" placeholder="Dirección" class="w-full p-2 border rounded" required></textarea>
+
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
         Crear Paciente
     </button>

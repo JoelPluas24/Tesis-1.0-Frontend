@@ -15,19 +15,31 @@ export class PacienteCreate {
   apellidos = '';
   email = '';
   password = '';
+  edad = '';
+  genero = 'MASCULINO';
+  direccion = '';
 
   constructor(
     private adminService: AdminService,
-    private router: Router
-  ) { }
+    private router: Router,
+  ) {}
 
   crear() {
-    const data = {
+    const data: any = {
       nombres: this.nombres,
       apellidos: this.apellidos,
       email: this.email,
-      password: this.password
+      password: this.password,
+      genero: this.genero,
     };
+
+    if (this.edad !== '' && this.edad !== null && this.edad !== undefined) {
+      data.edad = Number(this.edad);
+    }
+    
+    if (this.direccion && this.direccion.trim() !== '') {
+      data.direccion = this.direccion;
+    }
 
     this.adminService.crearPaciente(data).subscribe({
       next: () => {
@@ -37,7 +49,7 @@ export class PacienteCreate {
       error: (err) => {
         console.error(err);
         alert('Error al crear paciente');
-      }
+      },
     });
   }
 }

@@ -1,0 +1,69 @@
+<div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Pacientes Inactivos</h2>
+        <p class="text-slate-500 font-medium mt-1">Directorio de pacientes que terminaron sus sesiones</p>
+    </div>
+</div>
+
+<div *ngIf="cargando" class="flex flex-col items-center justify-center py-20 px-6">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 font-medium">Cargando pacientes inactivos...</p>
+</div>
+
+<div *ngIf="!cargando" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-sm">
+                    <th class="py-4 px-6 font-semibold">Perfil del Paciente</th>
+                    <th class="py-4 px-6 font-semibold">Contacto</th>
+                    <th class="py-4 px-6 font-semibold">Estado</th>
+                    <th class="py-4 px-6 font-semibold text-right">Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-600">
+                <tr *ngFor="let paciente of pacientes" class="hover:bg-slate-50/80 transition-colors group">
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 border border-slate-200 font-bold uppercase shrink-0">
+                                {{ paciente.nombres.charAt(0) }}{{ paciente.apellidos.charAt(0) }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">{{ paciente.nombres }} {{ paciente.apellidos }}</p>
+                                <p class="text-xs text-slate-500">ID: {{ paciente.id || 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <p class="text-slate-600 font-medium">{{ paciente.email }}</p>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-red-50 text-red-700 text-xs font-bold border border-red-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            Inactivo
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button (click)="reactivarPaciente(paciente.id)" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors px-3 py-1.5 rounded-lg font-bold text-xs" title="Reactivar Cuenta">
+                                Reactivar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="pacientes.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-8 h-8 text-slate-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+        </div>
+        <p class="text-slate-500 font-medium">No hay pacientes inactivos en el sistema.</p>
+    </div>
+</div>

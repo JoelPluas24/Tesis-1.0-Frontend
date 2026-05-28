@@ -19,11 +19,20 @@ export class DetallePaciente implements OnInit {
   rutina: any = null;
   ejercicios: any[] = [];
   progreso: any[] = [];
+  pacienteInfo: any = null;
+
+  // Fase de Recuperacion
+  faseActual: string = '';
+  editandoFase: boolean = false;
+  guardandoFase: boolean = false;
+  faseSeleccionada: string = '';
 
   // Métricas de progreso
   totalEjercicios: number = 0;
   ejerciciosRealizados: number = 0;
   porcentajeCumplimiento: number = 0;
+  totalDias: number = 1;
+  ejerciciosDiarios: number = 0;
 
   // Configuración del Gráfico (Bar Chart)
   public progressChartType: ChartType = 'bar';
@@ -48,6 +57,11 @@ export class DetallePaciente implements OnInit {
   guardandoPatologia: boolean = false;
   patologiaSeleccionadaId: number | '' = '';
 
+  // Historial de Rutinas
+  historialRutinas: any[] = [];
+  rutinaHistoricaSeleccionada: any = null;
+  ejerciciosHistoricos: any[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private fisioService: FisioterapeutaService
@@ -55,10 +69,53 @@ export class DetallePaciente implements OnInit {
 
   ngOnInit(): void {
     this.pacienteId = Number(this.route.snapshot.paramMap.get('id'));
+    this.cargarInformacionPaciente();
     this.cargarPatologiaPaciente();
     this.cargarCatalogoPatologias();
     this.cargarRutinaActiva();
     this.cargarProgreso();
+  }
+
+  cargarInformacionPaciente() {
+    this.fisioService.obtenerMisPacientes().subscribe({
+      next: (res: any) => {
+        const pacientes = res.pacientes || res;
+        this.pacienteInfo = pacientes.find((p: any) => p.id === this.pacienteId);
+        if (this.pacienteInfo) {
+          this.faseActual = this.pacienteInfo.fase_recuperacion || 'AGUDA';
+        }
+      },
+      error: (err) => console.error("Error obteniendo detalles del paciente", err)
+    });
+  }
+
+  activarEdicionFase() {
+    this.editandoFase = true;
+    this.faseSeleccionada = this.faseActual;
+  }
+
+  cancelarEdicionFase() {
+    this.editandoFase = false;
+  }
+
+  guardarFase() {
+    if (!this.faseSeleccionada) return;
+    this.guardandoFase = true;
+    this.fisioService.asignarFasePaciente(this.pacienteId, this.faseSeleccionada).subscribe({
+      next: () => {
+        this.faseActual = this.faseSeleccionada;
+        this.guardandoFase = false;
+        this.editandoFase = false;
+        if (this.pacienteInfo) {
+          this.pacienteInfo.fase_recuperacion = this.faseSeleccionada;
+        }
+      },
+      error: (err) => {
+        console.error("Error al actualizar fase", err);
+        this.guardandoFase = false;
+        alert("Ocurrió un error guardando la fase de recuperación.");
+      }
+    });
   }
 
   cargarPatologiaPaciente() {
@@ -144,6 +201,10 @@ export class DetallePaciente implements OnInit {
         this.totalEjercicios = res.total_ejercicios || 0;
         this.ejerciciosRealizados = res.ejercicios_realizados || 0;
         this.porcentajeCumplimiento = res.porcentaje_cumplimiento || 0;
+        
+        // Información adicional para el cálculo
+        this.totalDias = res.total_dias || 1;
+        this.ejerciciosDiarios = this.totalEjercicios > 0 ? (this.totalEjercicios / this.totalDias) : 0;
 
         this.setupChartData();
       },

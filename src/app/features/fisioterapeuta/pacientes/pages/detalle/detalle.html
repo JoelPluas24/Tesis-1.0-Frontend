@@ -11,7 +11,8 @@
 
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <div>
-        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Expediente Clínico</h2>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Expediente Clínico de {{ pacienteInfo?.nombres }}
+            {{ pacienteInfo?.apellidos }}</h2>
         <p class="text-slate-500 font-medium mt-1">Supervisión integral de progreso y tratamiento</p>
     </div>
     <a [routerLink]="['/fisioterapeuta/pacientes', pacienteId, 'asignar-rutina']"
@@ -20,7 +21,7 @@
             class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        Asignar Plan Físico
+        Administar Plan Físico
     </a>
 </div>
 
@@ -85,7 +86,7 @@
                         {{ pat.nombre }} ({{ pat.nivel_gravedad }})
                     </option>
                 </select>
-                
+
                 <div class="flex gap-2 justify-end">
                     <button (click)="cancelarEdicionPatologia()" [disabled]="guardandoPatologia"
                         class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50">
@@ -93,12 +94,79 @@
                     </button>
                     <button (click)="guardarPatologia()" [disabled]="guardandoPatologia || !patologiaSeleccionadaId"
                         class="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm shadow-blue-200 flex items-center gap-2">
-                        <span *ngIf="guardandoPatologia" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        <span *ngIf="guardandoPatologia"
+                            class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                         Guardar
                     </button>
                 </div>
             </div>
         </div>
+
+        <!-- ESTADO DE RECUPERACIÓN -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between gap-3 mb-5 border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800">Estado de Recuperación</h3>
+                </div>
+                <button *ngIf="!editandoFase" (click)="activarEdicionFase()"
+                    class="text-sm font-bold text-blue-600 hover:text-blue-800 bg-blue-50 py-1.5 px-3 rounded-lg transition-colors">
+                    Cambiar
+                </button>
+            </div>
+
+            <!-- VISTA LECTURA -->
+            <div *ngIf="!editandoFase">
+                <div class="bg-orange-50 border border-orange-100/50 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Fase Actual</p>
+                        <h4 class="text-lg font-black text-slate-800">{{ faseActual || 'Sin definir' }}</h4>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                            class="w-6 h-6 text-orange-500">
+                            <path fill-rule="evenodd"
+                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA EDICIÓN -->
+            <div *ngIf="editandoFase" class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <label class="block text-slate-700 text-sm font-bold mb-2">Seleccione la fase del paciente</label>
+                <select [(ngModel)]="faseSeleccionada"
+                    class="w-full bg-white border border-slate-300 text-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all mb-4">
+                    <option value="AGUDA">1. AGUDA (Dolor e Inflamación)</option>
+                    <option value="SUBAGUDA">2. SUBAGUDA (Movilidad Inicial)</option>
+                    <option value="FORTALECIMIENTO">3. FORTALECIMIENTO (Mantenimiento)</option>
+                </select>
+
+                <div class="flex gap-2 justify-end">
+                    <button (click)="cancelarEdicionFase()" [disabled]="guardandoFase"
+                        class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50">
+                        Cancelar
+                    </button>
+                    <button (click)="guardarFase()" [disabled]="guardandoFase || !faseSeleccionada"
+                        class="px-4 py-2 text-sm font-bold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 shadow-sm shadow-orange-200 flex items-center gap-2">
+                        <span *ngIf="guardandoFase"
+                            class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        Actualizar Fase
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAN TERAPEUTICO ACTUAL -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <div class="flex items-center gap-3 mb-5 border-b border-slate-100 pb-4">
                 <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
@@ -195,24 +263,24 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50 flex flex-col justify-center">
                     <p class="text-xs text-blue-500 font-bold mb-1 uppercase tracking-wider">Planificados</p>
-                    <p class="text-4xl font-black text-blue-700 leading-none">{{ totalEjercicios }}</p>
+                    <p class="text-4xl font-black text-blue-700 leading-none mb-1">{{ totalEjercicios }}</p>
+                    <p *ngIf="totalEjercicios > 0" class="text-[10px] text-blue-400 font-medium">({{ ejerciciosDiarios }} ejercicios × {{ totalDias }} días)</p>
                 </div>
 
-                <div
-                    class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100/50 flex flex-col justify-center relative overflow-hidden">
+                <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100/50 flex flex-col justify-center">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-100 rounded-full opacity-50"></div>
-                    <p class="text-xs text-emerald-600 font-bold mb-1 uppercase tracking-wider relative z-10">Realizados
+                    <p class="text-xs text-emerald-600 font-bold mb-1 uppercase tracking-wider ">Realizados
                     </p>
-                    <p class="text-4xl font-black text-emerald-800 leading-none relative z-10">{{ ejerciciosRealizados
+                    <p class="text-4xl font-black text-emerald-800 leading-none">{{ ejerciciosRealizados
                         }}</p>
                 </div>
 
                 <div
-                    class="bg-indigo-600 p-5 rounded-2xl border border-indigo-700 flex flex-col justify-center shadow-md shadow-indigo-200 relative overflow-hidden text-white">
+                    class="bg-indigo-600 p-5 rounded-2xl border border-indigo-700 flex flex-col justify-center shadow-md shadow-indigo-200 text-white">
                     <div
                         class="absolute right-0 top-0 w-32 h-32 bg-indigo-500 rounded-full blur-2xl opacity-50 -mr-10 -mt-10">
                     </div>
-                    <div class="relative z-10">
+                    <div>
                         <p class="text-xs text-indigo-200 font-bold uppercase tracking-wider mb-2">Desempeño Total</p>
                         <div class="flex items-end gap-1 mb-3">
                             <p class="text-4xl font-black leading-none">{{ porcentajeCumplimiento }}</p>
