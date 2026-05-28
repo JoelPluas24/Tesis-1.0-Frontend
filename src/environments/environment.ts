@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000/api', // Reemplaza con la URL de producción
-  socketUrl: 'http://localhost:3000'    // Reemplaza con la URL de producción
+  apiUrl: 'https://tesis-10-backend-production.up.railway.app/api',
+  socketUrl: 'https://tesis-10-backend-production.up.railway.app'    // Reemplaza con la URL de producción
 };
