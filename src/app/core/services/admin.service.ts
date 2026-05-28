@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
 
     private http = inject(HttpClient);
-    private API = 'http://localhost:3000/api/admin';
+    private API = `${environment.apiUrl}/admin`;
 
     //Crear Fisioterapeutas
     crearFisioterapeuta(data: any) {
-        return this.http.post('http://localhost:3000/api/auth/register', { ...data, rol: 'FISIOTERAPEUTA' });
+        return this.http.post(`${environment.apiUrl}/auth/register`, { ...data, rol: 'FISIOTERAPEUTA' });
     }
 
     //Listar Fisioterapeutas
@@ -19,7 +20,7 @@ export class AdminService {
 
     //Crear Pacientes.
     crearPaciente(data: any) {
-        return this.http.post('http://localhost:3000/api/auth/register', { ...data, rol: 'PACIENTE' });
+        return this.http.post(`${environment.apiUrl}/auth/register`, { ...data, rol: 'PACIENTE' });
     }
 
     //listar Pacientes
@@ -72,55 +73,55 @@ export class AdminService {
 
     // Catálogos: Patologías
     obtenerPatologias() {
-        return this.http.get(`http://localhost:3000/api/patologias`);
+        return this.http.get(`${environment.apiUrl}/patologias`);
     }
 
     obtenerPatologia(id: number) {
-        return this.http.get(`http://localhost:3000/api/patologias/${id}`);
+        return this.http.get(`${environment.apiUrl}/patologias/${id}`);
     }
 
     crearPatologia(data: any) {
-        return this.http.post(`http://localhost:3000/api/patologias`, data);
+        return this.http.post(`${environment.apiUrl}/patologias`, data);
     }
 
     actualizarPatologia(id: number, data: any) {
-        return this.http.put(`http://localhost:3000/api/patologias/${id}`, data);
+        return this.http.put(`${environment.apiUrl}/patologias/${id}`, data);
     }
 
     eliminarPatologia(id: number) {
-        return this.http.delete(`http://localhost:3000/api/patologias/${id}`);
+        return this.http.delete(`${environment.apiUrl}/patologias/${id}`);
     }
 
     asociarEjerciciosPatologia(patologiaId: number, ejerciciosIds: number[]) {
-        return this.http.post(`http://localhost:3000/api/ejercicios/asociar`, { 
+        return this.http.post(`${environment.apiUrl}/ejercicios/asociar`, { 
             patologia_id: patologiaId, 
             ejercicios_ids: ejerciciosIds 
         });
     }
 
     obtenerEjerciciosPorPatologia(patologiaId: number) {
-        return this.http.get(`http://localhost:3000/api/patologias/${patologiaId}/ejercicios`);
+        return this.http.get(`${environment.apiUrl}/patologias/${patologiaId}/ejercicios`);
     }
 
     // Catálogos: Ejercicios
     obtenerEjercicios() {
-        return this.http.get(`http://localhost:3000/api/ejercicios`);
+        return this.http.get(`${environment.apiUrl}/ejercicios`);
     }
 
     obtenerEjercicio(id: number) {
-        return this.http.get(`http://localhost:3000/api/ejercicios/${id}`);
+        return this.http.get(`${environment.apiUrl}/ejercicios/${id}`);
     }
 
     crearEjercicio(data: any) {
-        return this.http.post(`http://localhost:3000/api/ejercicios`, data);
+        return this.http.post(`${environment.apiUrl}/ejercicios`, data);
     }
 
     actualizarEjercicio(id: number, data: any) {
-        return this.http.put(`http://localhost:3000/api/ejercicios/${id}`, data);
+        return this.http.put(`${environment.apiUrl}/ejercicios/${id}`, data);
     }
 
     eliminarEjercicio(id: number) {
-        return this.http.delete(`http://localhost:3000/api/ejercicios/${id}`);
+        return this.http.delete(`${environment.apiUrl}/ejercicios/${id}`);
     }
 
 }
