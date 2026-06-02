@@ -14,6 +14,17 @@ export class PacientesList implements OnInit {
   pacientes: any[] = [];
   fisioterapeutas: any[] = [];
   cargando = true;
+  filtro = '';
+
+  get pacientesFiltrados() {
+    const term = this.filtro.toLowerCase().trim();
+    if (!term) return this.pacientes;
+    return this.pacientes.filter(p =>
+      p.nombres?.toLowerCase().includes(term) ||
+      p.apellidos?.toLowerCase().includes(term) ||
+      p.email?.toLowerCase().includes(term)
+    );
+  }
 
   // Selección Múltiple
   pacientesSeleccionados: Set<number> = new Set<number>();

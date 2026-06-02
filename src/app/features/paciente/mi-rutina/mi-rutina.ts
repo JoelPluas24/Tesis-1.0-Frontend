@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PacienteService } from '../../../core/services/paciente.service';
@@ -29,15 +29,20 @@ export class MiRutina implements OnInit {
   // Calendario e Historial
   historial: any[] = [];
   calendario: any[] = [];
+  mesActual: number = new Date().getMonth();
+  anioActual: number = new Date().getFullYear();
   mesActualNombre: string = '';
   diasSemana: string[] = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   fechasCompletadas: Set<string> = new Set();
+  today = new Date();
+
 
   constructor(
     private pacienteService: PacienteService,
     private userService: UserService,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -109,35 +114,56 @@ export class MiRutina implements OnInit {
   }
 
   generarCalendario() {
-    const hoy = new Date();
-    const anio = hoy.getFullYear();
-    const mes = hoy.getMonth();
+    console.log('Fechas completadas:', Array.from(this.fechasCompletadas));
+    console.log('Mes actual:', this.mesActual, 'Año:', this.anioActual);
+    const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    this.mesActualNombre = `${nombresMeses[this.mesActual]} ${this.anioActual}`;
 
-    const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    this.mesActualNombre = `${nombresMeses[mes]} ${anio}`;
-
-    const primerDia = new Date(anio, mes, 1);
-    const ultimoDia = new Date(anio, mes + 1, 0);
-
-    // Obtener día de la semana del 1er día (0 = Domingo, 1 = Lunes...)
+    const primerDia = new Date(this.anioActual, this.mesActual, 1);
+    const ultimoDia = new Date(this.anioActual, this.mesActual + 1, 0);
     const diaInicioSemana = primerDia.getDay();
+    const hoy = new Date();
 
     const dias = [];
-
-    // Rellenar días en blanco antes del primer día del mes
     for (let i = 0; i < diaInicioSemana; i++) {
       dias.push({ nro: null, completado: false, esHoy: false });
     }
-
-    // Rellenar los días del mes
     for (let i = 1; i <= ultimoDia.getDate(); i++) {
-      const fechaStr = `${anio}-${(mes + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+      const fechaStr = `${this.anioActual}-${(this.mesActual + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
       const completado = this.fechasCompletadas.has(fechaStr);
-      const esHoy = i === hoy.getDate();
+      const esHoy = i === hoy.getDate() &&
+        this.mesActual === hoy.getMonth() &&
+        this.anioActual === hoy.getFullYear();
       dias.push({ nro: i, completado, esHoy });
     }
-
     this.calendario = dias;
+    console.log('Días con completado=true:', dias.filter(d => d.completado));
+  }
+  // Agrega estos dos métodos nuevos
+  mesAnterior() {
+    if (this.mesActual === 0) {
+      this.mesActual = 11;
+      this.anioActual--;
+    } else {
+      this.mesActual--;
+    }
+    this.generarCalendario();
+    this.cdr.detectChanges();
+  }
+
+  mesSiguiente() {
+    const hoy = new Date();
+    // No permitir navegar más allá del mes actual
+    if (this.anioActual === hoy.getFullYear() && this.mesActual === hoy.getMonth()) return;
+    if (this.mesActual === 11) {
+      this.mesActual = 0;
+      this.anioActual++;
+    } else {
+      this.mesActual++;
+    }
+    this.generarCalendario();
+    this.cdr.detectChanges()
   }
 
   cargarMiRutina(pacienteId: number) {

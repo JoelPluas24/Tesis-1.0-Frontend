@@ -22,6 +22,19 @@
 </div>
 
 <div *ngIf="!cargando" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <!-- Filtro de Búsqueda -->
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+                </svg>
+            </span>
+            <input type="text" [(ngModel)]="filtro" placeholder="Buscar ejercicio por nombre, descripción o dificultad..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-slate-400 transition-all">
+        </div>
+    </div>
+
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
@@ -34,7 +47,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 text-slate-600">
-                <tr *ngFor="let ejercicio of ejercicios" class="hover:bg-slate-50/80 transition-colors group">
+                <tr *ngFor="let ejercicio of ejerciciosFiltrados" class="hover:bg-slate-50/80 transition-colors group">
                     <td class="py-4 px-6">
                         <span class="text-slate-400 font-mono text-xs">#{{ejercicio.id}}</span>
                     </td>
@@ -86,13 +99,15 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="ejercicios.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
+    <div *ngIf="ejerciciosFiltrados.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
         <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
             </svg>
         </div>
-        <p class="text-slate-500 font-medium h2">La biblioteca de ejercicios está vacía.</p>
-        <p class="text-slate-400 mt-1 text-sm">Empieza agregando movimientos o ejercicios de rehabilitación.</p>
+        <p class="text-slate-500 font-medium">
+            {{ ejercicios.length === 0 ? 'La biblioteca de ejercicios está vacía.' : 'No se encontraron ejercicios que coincidan con la búsqueda.' }}
+        </p>
+        <p *ngIf="ejercicios.length === 0" class="text-slate-400 mt-1 text-sm">Empieza agregando movimientos o ejercicios de rehabilitación.</p>
     </div>
 </div>

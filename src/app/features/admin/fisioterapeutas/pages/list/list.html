@@ -14,6 +14,19 @@
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <!-- Filtro de Búsqueda -->
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+                </svg>
+            </span>
+            <input type="text" [(ngModel)]="filtro" placeholder="Buscar especialista por nombre, email o especialidad..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-slate-400 transition-all">
+        </div>
+    </div>
+
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead class="bg-slate-50 border-b border-slate-200">
@@ -27,7 +40,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                <tr *ngFor="let f of fisioterapeutas" class="hover:bg-slate-50/80 transition-colors">
+                <tr *ngFor="let f of fisioterapeutasFiltrados" class="hover:bg-slate-50/80 transition-colors">
                     <td class="py-4 px-6">
                         <div class="flex items-center gap-3">
                             <div
@@ -87,7 +100,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="fisioterapeutas.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
+    <div *ngIf="fisioterapeutasFiltrados.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
         <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-8 h-8 text-slate-400">
@@ -95,7 +108,9 @@
                     d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
         </div>
-        <p class="text-slate-500 font-medium">Aún no hay personal médico registrado.</p>
+        <p class="text-slate-500 font-medium">
+            {{ fisioterapeutas.length === 0 ? 'Aún no hay personal médico registrado.' : 'No se encontraron especialistas que coincidan con la búsqueda.' }}
+        </p>
     </div>
 </div>
 

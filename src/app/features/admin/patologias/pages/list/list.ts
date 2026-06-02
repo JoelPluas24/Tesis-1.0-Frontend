@@ -13,6 +13,16 @@ import { AdminService } from '../../../../../core/services/admin.service';
 export class List implements OnInit {
   patologias: any[] = [];
   cargando = true;
+  filtro = '';
+
+  get patologiasFiltradas() {
+    const term = this.filtro.toLowerCase().trim();
+    if (!term) return this.patologias;
+    return this.patologias.filter(p =>
+      p.nombre?.toLowerCase().includes(term) ||
+      p.descripcion?.toLowerCase().includes(term)
+    );
+  }
 
   constructor(private adminService: AdminService) {}
 

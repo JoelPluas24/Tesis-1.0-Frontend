@@ -13,6 +13,17 @@ import { AdminService } from '../../../../../core/services/admin.service';
 export class List implements OnInit {
   ejercicios: any[] = [];
   cargando = true;
+  filtro = '';
+
+  get ejerciciosFiltrados() {
+    const term = this.filtro.toLowerCase().trim();
+    if (!term) return this.ejercicios;
+    return this.ejercicios.filter(e =>
+      e.nombre?.toLowerCase().includes(term) ||
+      e.descripcion?.toLowerCase().includes(term) ||
+      e.nivel_dificultad?.toLowerCase().includes(term)
+    );
+  }
 
   constructor(private adminService: AdminService) {}
 

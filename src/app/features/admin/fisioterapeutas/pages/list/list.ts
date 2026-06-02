@@ -12,6 +12,18 @@ import { RouterLink } from '@angular/router';
 })
 export class FisioterapeutasList implements OnInit {
   fisioterapeutas: any[] = [];
+  filtro = '';
+
+  get fisioterapeutasFiltrados() {
+    const term = this.filtro.toLowerCase().trim();
+    if (!term) return this.fisioterapeutas;
+    return this.fisioterapeutas.filter(f =>
+      f.nombres?.toLowerCase().includes(term) ||
+      f.apellidos?.toLowerCase().includes(term) ||
+      f.email?.toLowerCase().includes(term) ||
+      f.especialidad?.toLowerCase().includes(term)
+    );
+  }
 
   constructor(private adminService: AdminService) { }
 
