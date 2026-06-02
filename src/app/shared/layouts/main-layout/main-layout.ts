@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterOutlet, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
@@ -15,12 +15,14 @@ import { Subscription } from 'rxjs';
 export class MainLayout implements OnInit, OnDestroy {
 
   usuario: any;
+  sidebarOpen = false;
   
   // Notificaciones
   notificaciones: any[] = [];
   mostrarToast = false;
   toastData: any = null;
   private socketSub: Subscription | undefined;
+  private routerSub: Subscription | undefined;
 
   // Modal Cambiar Password
   mostrarModalPassword = false;
@@ -52,13 +54,30 @@ export class MainLayout implements OnInit, OnDestroy {
       this.notificaciones.unshift(data);
       this.mostrarNotificacionToast(data);
     });
+
+    this.routerSub = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.sidebarOpen = false;
+      }
+    });
   }
 
   ngOnDestroy(): void {
     if (this.socketSub) {
       this.socketSub.unsubscribe();
     }
+    if (this.routerSub) {
+      this.routerSub.unsubscribe();
+    }
     this.socketService.disconnect();
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar() {
+    this.sidebarOpen = false;
   }
 
   mostrarNotificacionToast(data: any) {

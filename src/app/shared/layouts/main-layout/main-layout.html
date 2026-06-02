@@ -1,7 +1,15 @@
-<div class="flex h-screen bg-slate-50 font-sans">
+<div class="flex h-screen bg-slate-50 font-sans relative overflow-hidden">
+
+    <!-- Backdrop Overlay para Móviles -->
+    @if (sidebarOpen) {
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300" (click)="closeSidebar()"></div>
+    }
 
     <!-- Sidebar Moderno -->
-    <aside class="w-72 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10 transition-all duration-300">
+    <aside 
+        class="w-72 bg-white border-r border-slate-200 flex flex-col shadow-sm fixed lg:static inset-y-0 left-0 z-50 lg:z-10 transition-all duration-300 transform -translate-x-full lg:translate-x-0"
+        [class.translate-x-0]="sidebarOpen"
+        [class.-translate-x-full]="!sidebarOpen">
 
         <!-- Header del Sidebar -->
         <div class="h-20 flex items-center px-8 border-b border-slate-100">
@@ -155,7 +163,15 @@
     <!-- Main Content Area -->
     <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/50 relative">
         <div class="h-20 border-b border-slate-200 bg-white/50 backdrop-blur-sm sticky top-0 z-40 flex items-center px-8 justify-between">
-            <h1 class="text-slate-500 font-medium text-sm">Portal de Rehabilitación Física</h1>
+            <div class="flex items-center gap-4">
+                <!-- Hamburger Menu Button for mobile -->
+                <button (click)="toggleSidebar()" class="p-2 -ml-2 rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden transition-colors" aria-label="Abrir menú">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+                <h1 class="text-slate-500 font-medium text-sm">Portal de Rehabilitación Física</h1>
+            </div>
             
             <!-- Notificaciones Icon -->
             <div class="relative group cursor-pointer">
