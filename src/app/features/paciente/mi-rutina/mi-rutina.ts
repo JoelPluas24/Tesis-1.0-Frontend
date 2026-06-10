@@ -5,6 +5,7 @@ import { PacienteService } from '../../../core/services/paciente.service';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SocketService } from '../../../core/services/socket.service';
 @Component({
   selector: 'app-mi-rutina',
   imports: [CommonModule],
@@ -42,7 +43,8 @@ export class MiRutina implements OnInit {
     private userService: UserService,
     private auth: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private socketService: SocketService
   ) { }
 
   ngOnInit(): void {
@@ -203,11 +205,22 @@ export class MiRutina implements OnInit {
     });
   }
 
+  get planExpirado(): boolean {
+    if (!this.fechaFinPlan) return false;
+    const hoyStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Guayaquil' }).format(new Date());
+    const cleanFinStr = this.fechaFinPlan.split('T')[0];
+    return hoyStr > cleanFinStr;
+  }
+
   getArray(n: number): any[] {
     return Array(n);
   }
 
   marcarCompletado(ejercicio: any) {
+    if (this.planExpirado) {
+      this.socketService.enviarNotificacionLocal("Plan Finalizado", "Tu plan de recuperación ha concluido. Por favor, contacta a tu fisioterapeuta.");
+      return;
+    }
     if (ejercicio.completadoHoy) return; // Si ya se completó no hacer nada
 
     this.pacienteService.registrarCumplimiento(ejercicio.id).subscribe({
@@ -228,7 +241,8 @@ export class MiRutina implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         console.error("Error al registrar cumplimiento", err);
-        alert("Ocurrió un error al intentar guardar tu avance. Por favor, intenta de nuevo.");
+        const errorMsg = err.error?.message || "Ocurrió un error al intentar guardar tu avance. Por favor, intenta de nuevo.";
+        this.socketService.enviarNotificacionLocal("Error", errorMsg);
       }
     });
   }

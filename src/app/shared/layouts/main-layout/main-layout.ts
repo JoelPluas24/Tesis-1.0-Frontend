@@ -5,10 +5,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { SocketService } from '../../../core/services/socket.service';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterLink, RouterOutlet, RouterLinkActive, FormsModule],
+  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, FormsModule],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
 })
@@ -21,6 +22,8 @@ export class MainLayout implements OnInit, OnDestroy {
   notificaciones: any[] = [];
   mostrarToast = false;
   toastData: any = null;
+  mostrarNotificacionesDropdown = false;
+  notificacionSeleccionada: any = null;
   private socketSub: Subscription | undefined;
   private routerSub: Subscription | undefined;
 
@@ -50,9 +53,24 @@ export class MainLayout implements OnInit, OnDestroy {
       }
     });
 
+    const stored = localStorage.getItem('rehabsoft_notifications');
+    if (stored) {
+      try {
+        this.notificaciones = JSON.parse(stored);
+      } catch (e) {
+        this.notificaciones = [];
+      }
+    }
+
     this.socketSub = this.socketService.notifications$.subscribe(data => {
-      this.notificaciones.unshift(data);
-      this.mostrarNotificacionToast(data);
+      const nuevaNotif = {
+        ...data,
+        leida: false,
+        id: data.id || Date.now() + Math.random().toString(36).substr(2, 9)
+      };
+      this.notificaciones.unshift(nuevaNotif);
+      this.guardarNotificaciones();
+      this.mostrarNotificacionToast(nuevaNotif);
     });
 
     this.routerSub = this.router.events.subscribe(event => {
@@ -129,6 +147,44 @@ export class MainLayout implements OnInit, OnDestroy {
   logout() {
     this.auth.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  // Métodos de Notificaciones
+  toggleNotificacionesDropdown(event: MouseEvent) {
+    event.stopPropagation();
+    this.mostrarNotificacionesDropdown = !this.mostrarNotificacionesDropdown;
+  }
+
+  cerrarNotificacionesDropdown() {
+    this.mostrarNotificacionesDropdown = false;
+  }
+
+  abrirNotificacion(notif: any, event: MouseEvent) {
+    event.stopPropagation();
+    notif.leida = true;
+    this.notificacionSeleccionada = notif;
+    this.guardarNotificaciones();
+    this.cerrarNotificacionesDropdown();
+  }
+
+  cerrarNotificacionModal() {
+    this.notificacionSeleccionada = null;
+  }
+
+  eliminarNotificacion(index: number, event: MouseEvent) {
+    event.stopPropagation();
+    this.notificaciones.splice(index, 1);
+    this.guardarNotificaciones();
+  }
+
+  limpiarTodas(event: MouseEvent) {
+    event.stopPropagation();
+    this.notificaciones = [];
+    this.guardarNotificaciones();
+  }
+
+  guardarNotificaciones() {
+    localStorage.setItem('rehabsoft_notifications', JSON.stringify(this.notificaciones));
   }
 
 }

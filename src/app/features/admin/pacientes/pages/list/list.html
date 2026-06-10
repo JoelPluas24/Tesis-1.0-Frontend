@@ -58,6 +58,7 @@
                     <th class="py-4 px-6 font-semibold">Perfil del Paciente</th>
                     <th class="py-4 px-6 font-semibold">Contacto</th>
                     <th class="py-4 px-6 font-semibold">Estado</th>
+                    <th class="py-4 px-6 font-semibold">Fisioterapeuta</th>
                     <th class="py-4 px-6 font-semibold text-right">Acciones
                     </th>
                 </tr>
@@ -90,6 +91,17 @@
                             class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             Activo
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-sm font-semibold text-slate-700">
+                        <span *ngIf="paciente.fisio_nombres">
+                            Dr. {{ paciente.fisio_nombres }} {{ paciente.fisio_apellidos }}
+                        </span>
+                        <span *ngIf="!paciente.fisio_nombres && paciente.fisioterapeuta_id">
+                            {{ obtenerNombreFisioterapeuta(paciente.fisioterapeuta_id) }}
+                        </span>
+                        <span *ngIf="!paciente.fisioterapeuta_id" class="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-50 text-slate-500 text-xs font-medium border border-slate-200 italic">
+                            Sin asignar
                         </span>
                     </td>
                     <td class="py-4 px-6 text-right">
@@ -266,7 +278,7 @@
                     class="w-full bg-white border border-slate-300 text-slate-800 rounded-lg px-4 py-3 appearance-none focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm font-medium">
                     <option [ngValue]="null" disabled selected>-- Elige un Especialista --</option>
                     <option *ngFor="let fisio of fisioterapeutas" [ngValue]="fisio.id">
-                        Dr. {{ fisio.nombres }} {{ fisio.apellidos }} ({{ fisio.especialidad }})
+                        Dr. {{ fisio.nombres }} {{ fisio.apellidos }} 
                     </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">

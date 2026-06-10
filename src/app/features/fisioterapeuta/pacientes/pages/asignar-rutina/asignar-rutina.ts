@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FisioterapeutaService } from '../../../../../core/services/fisioterapeuta.service';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-asignar-rutina',
@@ -35,6 +36,7 @@ export class AsignarRutina implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fisioService: FisioterapeutaService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
@@ -115,7 +117,7 @@ export class AsignarRutina implements OnInit {
 
   agregarEjercicio() {
     if (!this.ejercicioSeleccionadoId) {
-      alert('Por favor seleccione un ejercicio');
+      this.socketService.enviarNotificacionLocal('Ejercicio', 'Por favor seleccione un ejercicio');
       return;
     }
 
@@ -133,7 +135,7 @@ export class AsignarRutina implements OnInit {
     // Evitar duplicados
     const yaExiste = this.ejerciciosAgregados.find((e) => e.ejercicio_id === ejEncontrado.id);
     if (yaExiste) {
-      alert('Este ejercicio ya fue agregado a la rutina');
+      this.socketService.enviarNotificacionLocal('Ejercicio', 'Este ejercicio ya fue agregado a la rutina');
       return;
     }
 
@@ -158,15 +160,15 @@ export class AsignarRutina implements OnInit {
 
   guardarRutina() {
     if (this.ejerciciosAgregados.length === 0) {
-      alert('La rutina debe tener al menos un ejercicio');
+      this.socketService.enviarNotificacionLocal('Rutina', 'La rutina debe tener al menos un ejercicio');
       return;
     }
     if (!this.fechaInicio) {
-      alert('Debe indicar la fecha de inicio');
+      this.socketService.enviarNotificacionLocal('Fechas', 'Debe indicar la fecha de inicio');
       return;
     }
     if (!this.fechaFin) {
-      alert('Debe indicar la fecha de fin');
+      this.socketService.enviarNotificacionLocal('Fechas', 'Debe indicar la fecha de fin');
       return;
     }
 
@@ -187,23 +189,23 @@ export class AsignarRutina implements OnInit {
     if (this.rutinaActualId) {
       this.fisioService.editarRutina(this.rutinaActualId, payload).subscribe({
         next: () => {
-          alert('Rutina actualizada exitosamente');
+          this.socketService.enviarNotificacionLocal('Rutina Guardada', 'Rutina actualizada exitosamente');
           this.router.navigate(['/fisioterapeuta/pacientes', this.pacienteId]);
         },
         error: (err) => {
           console.error('Error editando rutina', err);
-          alert('Ocurrió un error al actualizar la rutina');
+          this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al actualizar la rutina');
         },
       });
     } else {
       this.fisioService.crearRutina(payload).subscribe({
         next: () => {
-          alert('Rutina asignada exitosamente');
+          this.socketService.enviarNotificacionLocal('Rutina Guardada', 'Rutina asignada exitosamente');
           this.router.navigate(['/fisioterapeuta/pacientes', this.pacienteId]);
         },
         error: (err) => {
           console.error('Error creando rutina', err);
-          alert('Ocurrió un error al asignar la rutina');
+          this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al asignar la rutina');
         },
       });
     }
@@ -215,12 +217,12 @@ export class AsignarRutina implements OnInit {
 
     this.fisioService.eliminarRutina(this.rutinaActualId).subscribe({
       next: () => {
-        alert('Rutina eliminada exitosamente');
+        this.socketService.enviarNotificacionLocal('Rutina Eliminada', 'Rutina eliminada exitosamente');
         this.router.navigate(['/fisioterapeuta/pacientes', this.pacienteId]);
       },
       error: (err) => {
         console.error('Error eliminando rutina', err);
-        alert('Ocurrió un error al eliminar la rutina');
+        this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al eliminar la rutina');
       }
     });
   }

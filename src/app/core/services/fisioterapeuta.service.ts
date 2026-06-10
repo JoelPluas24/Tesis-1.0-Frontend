@@ -71,4 +71,8 @@ export class FisioterapeutaService {
     asignarFasePaciente(paciente_id: number, fase_recuperacion: string) {
         return this.http.put(`${this.API}/pacientes/${paciente_id}/fase`, { fase_recuperacion });
     }
+
+    darAltaPaciente(paciente_id: number) {
+        return this.http.put(`${this.API}/pacientes/${paciente_id}/alta`, {});
+    }
 }

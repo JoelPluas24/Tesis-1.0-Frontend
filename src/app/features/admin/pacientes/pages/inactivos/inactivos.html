@@ -31,6 +31,7 @@
                     <th class="py-4 px-6 font-semibold">Perfil del Paciente</th>
                     <th class="py-4 px-6 font-semibold">Contacto</th>
                     <th class="py-4 px-6 font-semibold">Estado</th>
+                    <th class="py-4 px-6 font-semibold">Fisioterapeuta</th>
                     <th class="py-4 px-6 font-semibold text-right">Acciones
                     </th>
                 </tr>
@@ -55,6 +56,14 @@
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-red-50 text-red-700 text-xs font-bold border border-red-200">
                             <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
                             Inactivo
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-sm font-semibold text-slate-700">
+                        <span *ngIf="paciente.fisio_nombres">
+                            Dr. {{ paciente.fisio_nombres }} {{ paciente.fisio_apellidos }}
+                        </span>
+                        <span *ngIf="!paciente.fisio_nombres" class="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-50 text-slate-500 text-xs font-medium border border-slate-200 italic">
+                            Sin asignar
                         </span>
                     </td>
                     <td class="py-4 px-6 text-right">

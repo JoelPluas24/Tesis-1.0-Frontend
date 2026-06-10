@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../../../core/services/admin.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-create',
@@ -22,6 +23,7 @@ export class PacienteCreate {
   constructor(
     private adminService: AdminService,
     private router: Router,
+    private socketService: SocketService
   ) {}
 
   crear() {
@@ -43,12 +45,12 @@ export class PacienteCreate {
 
     this.adminService.crearPaciente(data).subscribe({
       next: () => {
-        alert('Paciente creado correctamente');
+        this.socketService.enviarNotificacionLocal('Paciente', 'Paciente creado correctamente');
         this.router.navigate(['/admin/pacientes']);
       },
       error: (err) => {
         console.error(err);
-        alert('Error al crear paciente');
+        this.socketService.enviarNotificacionLocal('Error', 'Error al crear paciente');
       },
     });
   }

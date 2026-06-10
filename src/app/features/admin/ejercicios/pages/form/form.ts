@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AdminService } from '../../../../../core/services/admin.service';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-ejercicio-form',
@@ -27,7 +28,8 @@ export class Form implements OnInit {
   constructor(
     private adminService: AdminService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private socketService: SocketService
   ) { }
 
   ngOnInit(): void {
@@ -49,14 +51,14 @@ export class Form implements OnInit {
       error: (err) => {
         console.error("Error al cargar ejercicio", err);
         this.cargando = false;
-        alert("Ocurrió un error cargando el ejercicio seleccionado.");
+        this.socketService.enviarNotificacionLocal("Error", "Ocurrió un error cargando el ejercicio seleccionado.");
       }
     });
   }
 
   guardar() {
     if (!this.ejercicio.nombre) {
-      alert("El nombre del ejercicio es obligatorio.");
+      this.socketService.enviarNotificacionLocal("Ejercicio", "El nombre del ejercicio es obligatorio.");
       return;
     }
 
@@ -70,7 +72,7 @@ export class Form implements OnInit {
         },
         error: (err) => {
           console.error("Error al actualizar", err);
-          alert("Ocurrió un error al actualizar el ejercicio.");
+          this.socketService.enviarNotificacionLocal("Error", "Ocurrió un error al actualizar el ejercicio.");
           this.guardando = false;
         }
       });
@@ -82,7 +84,7 @@ export class Form implements OnInit {
         },
         error: (err) => {
           console.error("Error al crear", err);
-          alert("Ocurrió un error al crear el ejercicio.");
+          this.socketService.enviarNotificacionLocal("Error", "Ocurrió un error al crear el ejercicio.");
           this.guardando = false;
         }
       });

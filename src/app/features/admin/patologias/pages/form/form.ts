@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AdminService } from '../../../../../core/services/admin.service';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-patologia-form',
@@ -28,7 +29,8 @@ export class Form implements OnInit {
   constructor(
     private adminService: AdminService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
@@ -93,7 +95,7 @@ export class Form implements OnInit {
 
   guardar() {
     if (!this.patologia.nombre) {
-      alert("El nombre de la patología es obligatorio.");
+      this.socketService.enviarNotificacionLocal("Patología", "El nombre de la patología es obligatorio.");
       return;
     }
 
@@ -107,7 +109,7 @@ export class Form implements OnInit {
         },
         error: (err) => {
           console.error("Error al actualizar", err);
-          alert("Ocurrió un error guardando los datos.");
+          this.socketService.enviarNotificacionLocal("Error", "Ocurrió un error guardando los datos.");
           this.guardando = false;
         }
       });
@@ -127,7 +129,7 @@ export class Form implements OnInit {
         },
         error: (err) => {
           console.error("Error al crear", err);
-          alert("Ocurrió un error creando la patología.");
+          this.socketService.enviarNotificacionLocal("Error", "Ocurrió un error creando la patología.");
           this.guardando = false;
         }
       });

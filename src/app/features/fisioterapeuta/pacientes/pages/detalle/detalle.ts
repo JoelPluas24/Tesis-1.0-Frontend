@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FisioterapeutaService } from '../../../../../core/services/fisioterapeuta.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-detalle',
@@ -20,6 +21,7 @@ export class DetallePaciente implements OnInit {
   ejercicios: any[] = [];
   progreso: any[] = [];
   pacienteInfo: any = null;
+  dandoAlta = false;
 
   // Fase de Recuperacion
   faseActual: string = '';
@@ -64,7 +66,9 @@ export class DetallePaciente implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private fisioService: FisioterapeutaService
+    private router: Router,
+    private fisioService: FisioterapeutaService,
+    private socketService: SocketService
   ) { }
 
   ngOnInit(): void {
@@ -113,7 +117,7 @@ export class DetallePaciente implements OnInit {
       error: (err) => {
         console.error("Error al actualizar fase", err);
         this.guardandoFase = false;
-        alert("Ocurrió un error guardando la fase de recuperación.");
+        this.socketService.enviarNotificacionLocal("Fase de Recuperación", "Ocurrió un error guardando la fase de recuperación.");
       }
     });
   }
@@ -153,7 +157,7 @@ export class DetallePaciente implements OnInit {
 
   guardarPatologia() {
     if (!this.patologiaSeleccionadaId) {
-      alert("Por favor seleccione un diagnóstico del catálogo.");
+      this.socketService.enviarNotificacionLocal("Diagnóstico", "Por favor seleccione un diagnóstico del catálogo.");
       return;
     }
     this.guardandoPatologia = true;
@@ -166,7 +170,7 @@ export class DetallePaciente implements OnInit {
       error: (err) => {
         console.error("Error al asignar", err);
         this.guardandoPatologia = false;
-        alert("Ocurrió un error guardando el diagnóstico clínico.");
+        this.socketService.enviarNotificacionLocal("Diagnóstico", "Ocurrió un error guardando el diagnóstico clínico.");
       }
     });
   }
@@ -233,4 +237,20 @@ export class DetallePaciente implements OnInit {
     }
   }
 
+  darAlta() {
+    if (!confirm('¿Está seguro de querer dar de alta a este paciente? Esto inactivará su cuenta y finalizará su tratamiento.')) return;
+    this.dandoAlta = true;
+    this.fisioService.darAltaPaciente(this.pacienteId).subscribe({
+      next: () => {
+        this.dandoAlta = false;
+        this.socketService.enviarNotificacionLocal('Alta Médica', 'El paciente ha sido dado de alta exitosamente.');
+        this.router.navigate(['/fisioterapeuta/mis-pacientes']);
+      },
+      error: (err) => {
+        console.error("Error al dar de alta", err);
+        this.dandoAlta = false;
+        this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al dar de alta al paciente.');
+      }
+    });
+  }
 }

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../../../core/services/admin.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-create',
@@ -20,6 +21,7 @@ export class FisioCreate {
   constructor(
     private adminService: AdminService,
     private router: Router,
+    private socketService: SocketService
   ) {}
 
   crear() {
@@ -33,12 +35,12 @@ export class FisioCreate {
 
     this.adminService.crearFisioterapeuta(data).subscribe({
       next: () => {
-        alert('Fisioterapeuta creado');
+        this.socketService.enviarNotificacionLocal('Fisioterapeuta', 'Fisioterapeuta creado exitosamente');
         this.router.navigate(['/admin/fisioterapeutas']);
       },
       error: (err) => {
         console.error(err);
-        alert('Error al crear');
+        this.socketService.enviarNotificacionLocal('Error', 'Error al crear fisioterapeuta');
       },
     });
   }

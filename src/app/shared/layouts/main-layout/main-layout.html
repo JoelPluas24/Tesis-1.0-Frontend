@@ -174,15 +174,94 @@
             </div>
             
             <!-- Notificaciones Icon -->
-            <div class="relative group cursor-pointer">
-                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors">
+            <div class="relative">
+                <button (click)="toggleNotificacionesDropdown($event)" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors focus:outline-none relative" aria-label="Notificaciones">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                     </svg>
                     @if (notificaciones.length > 0) {
-                        <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                        <span class="absolute top-0 right-0 min-w-5 h-5 px-1.5 flex items-center justify-center bg-red-500 rounded-full border border-white text-[10px] font-black text-white transform translate-x-1 -translate-y-1">
+                            {{ notificaciones.length }}
+                        </span>
                     }
-                </div>
+                </button>
+
+                <!-- Dropdown de Notificaciones -->
+                @if (mostrarNotificacionesDropdown) {
+                    <!-- Backdrop invisible para cerrar al hacer click fuera -->
+                    <div class="fixed inset-0 z-40 cursor-default" (click)="cerrarNotificacionesDropdown()"></div>
+
+                    <div class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-50 animate-fade-in-up">
+                        <!-- Header del Dropdown -->
+                        <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800 text-sm">Notificaciones</h3>
+                            @if (notificaciones.length > 0) {
+                                <button (click)="limpiarTodas($event)" class="text-xs text-blue-600 hover:text-blue-700 font-bold transition-colors">
+                                    Limpiar todo
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Lista de Notificaciones -->
+                        <div class="max-h-80 overflow-y-auto divide-y divide-slate-100">
+                            @for (notif of notificaciones; track notif.id; let i = $index) {
+                                <div (click)="abrirNotificacion(notif, $event)" 
+                                     class="p-4 hover:bg-slate-50 transition-colors flex gap-3 relative group cursor-pointer"
+                                     [class.bg-blue-50\/40]="!notif.leida">
+                                    
+                                    <!-- Indicador no leído -->
+                                    @if (!notif.leida) {
+                                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-600 rounded-full"></span>
+                                    }
+
+                                    <!-- Icono dinámico según título -->
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                                         [class.bg-emerald-100]="notif.titulo === 'Alta Médica'"
+                                         [class.text-emerald-700]="notif.titulo === 'Alta Médica'"
+                                         [class.bg-blue-100]="notif.titulo !== 'Alta Médica'"
+                                         [class.text-blue-700]="notif.titulo !== 'Alta Médica'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                            @if (notif.titulo === 'Alta Médica') {
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                                            } @else {
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                                            }
+                                        </svg>
+                                    </div>
+
+                                    <!-- Contenido -->
+                                    <div class="flex-1 min-w-0 pr-6 pl-1.5">
+                                        <p class="text-xs font-bold text-slate-800 truncate">{{ notif.titulo }}</p>
+                                        <p class="text-xs text-slate-500 line-clamp-2 mt-0.5">{{ notif.mensaje }}</p>
+                                        <p class="text-[10px] text-slate-400 mt-1 font-medium">{{ notif.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+                                    </div>
+
+                                    <!-- Botón Eliminar Individual -->
+                                    <button (click)="eliminarNotificacion(i, $event)" 
+                                            class="absolute right-4 top-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-red-50" 
+                                            title="Eliminar notificación">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Empty State del Dropdown -->
+                        @if (notificaciones.length === 0) {
+                            <div class="p-8 text-center flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 text-slate-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                                    </svg>
+                                </div>
+                                <p class="text-xs text-slate-500 font-bold">No tienes notificaciones</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Te avisaremos cuando haya novedades.</p>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         </div>
 
@@ -253,6 +332,48 @@
             <div class="pt-2">
                 <button (click)="cambiarPassword()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors shadow-md shadow-blue-200">
                     Actualizar Contraseña
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Detalle de Notificación -->
+@if (notificacionSeleccionada) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-all p-4">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden animate-fade-in-up">
+        <!-- Header -->
+        <div class="bg-blue-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="font-bold text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                Notificación
+            </h3>
+            <button (click)="cerrarNotificacionModal()" class="text-white/70 hover:text-white transition-colors focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="p-6">
+            <div class="mb-4">
+                <h4 class="text-base font-black text-slate-800">{{ notificacionSeleccionada.titulo }}</h4>
+                <p class="text-xs text-slate-400 mt-1 font-semibold">{{ notificacionSeleccionada.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+            
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-6">
+                <p class="text-sm text-slate-600 leading-relaxed font-medium">{{ notificacionSeleccionada.mensaje }}</p>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex items-center justify-end">
+                <button type="button" (click)="cerrarNotificacionModal()"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-colors text-center focus:outline-none">
+                    Entendido
                 </button>
             </div>
         </div>

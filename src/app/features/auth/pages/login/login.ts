@@ -14,6 +14,7 @@ export class Login implements OnInit {
   email = '';
   password = '';
   showPassword = false;
+  errorLogin = '';
 
   constructor(
     private auth: AuthService,
@@ -67,7 +68,7 @@ export class Login implements OnInit {
         }
       },
       error: () => {
-        alert('Credenciales incorrectas');
+        this.errorLogin = 'Credenciales incorrectas. Por favor, intente de nuevo.';
       }
     });
   }

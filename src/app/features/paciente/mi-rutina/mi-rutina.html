@@ -37,7 +37,13 @@
             class="bg-blue-700 bg-linear-to-r from-blue-700 to-indigo-800 p-8 text-white relative overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
             <div class="relative z-10">
-                <div
+                <div *ngIf="planExpirado"
+                    class="inline-flex items-center gap-2 bg-amber-500/20 backdrop-blur-md px-3 py-1.5 text-xs font-bold rounded-full mb-4 border border-amber-500/30 text-amber-200">
+                    <span
+                        class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8)]"></span>
+                    Plan Finalizado (Límite Excedido)
+                </div>
+                <div *ngIf="!planExpirado"
                     class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 text-xs font-bold rounded-full mb-4 border border-white/20">
                     <span
                         class="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)] animate-pulse"></span>
@@ -52,6 +58,25 @@
         </div>
 
         <div class="p-8">
+            <!-- Alerta Plan Expirado -->
+            <div *ngIf="planExpirado"
+                class="mb-6 bg-amber-50 border border-amber-200 p-5 rounded-2xl flex gap-4 items-start shadow-sm">
+                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286zm0 13.036h.008v.008H12v-.008z" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-amber-900 mb-1">Plan de Recuperación Concluido</h4>
+                    <p class="text-amber-800/80 leading-relaxed text-sm">
+                        La fecha límite de tu plan de rehabilitación ha pasado (finalizó el <strong>{{ fechaFinPlan | date:'mediumDate':'UTC' }}</strong>). 
+                        Las actividades de registro se encuentran temporalmente deshabilitadas. Por favor, comunícate con tu fisioterapeuta para evaluar tu estado, asignar un nuevo plan o tramitar tu alta oficial.
+                    </p>
+                </div>
+            </div>
+
             <!-- Indicaciones (Solo si hay rutina) -->
             <div *ngIf="rutina && rutina.observaciones"
                 class="mb-6 bg-amber-50/80 p-5 rounded-2xl border border-amber-200/50 flex gap-4 items-start shadow-sm">
@@ -168,8 +193,8 @@
                             </div>
                             <div class="flex gap-2 justify-center">
                                 <button *ngFor="let _ of getArray(ej.metaDiaria); let i = index"
-                                    (click)="marcarCompletado(ej)" [disabled]="i < ej.vecesCompletadasHoy"
-                                    [ngClass]="i < ej.vecesCompletadasHoy ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-none cursor-default' : 'bg-slate-800 hover:bg-slate-900 text-white shadow-md cursor-pointer hover:-translate-y-0.5'"
+                                    (click)="marcarCompletado(ej)" [disabled]="i < ej.vecesCompletadasHoy || planExpirado"
+                                    [ngClass]="i < ej.vecesCompletadasHoy ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-none cursor-default' : (planExpirado ? 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed shadow-none' : 'bg-slate-800 hover:bg-slate-900 text-white shadow-md cursor-pointer hover:-translate-y-0.5')"
                                     class="flex-1 py-3 px-2 font-bold rounded-xl transition-all border outline-none flex items-center justify-center gap-1">
 
                                     <ng-container *ngIf="i >= ej.vecesCompletadasHoy">
@@ -336,7 +361,7 @@
 
                 <div class="bg-emerald-50 rounded-2xl p-6 border border-emerald-100 inline-block mb-8">
                     <p class="text-emerald-800 font-bold mb-1">¡Excelente trabajo y dedicación!</p>
-                    <p class="text-emerald-700/80 text-sm">Tu cuenta pasará a estado inactivo al salir.</p>
+                    <p class="text-emerald-700/80 text-sm">Tu fisioterapeuta revisará tu caso para completar tu alta oficial.</p>
                 </div>
 
                 <div>

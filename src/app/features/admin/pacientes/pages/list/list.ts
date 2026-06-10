@@ -3,6 +3,7 @@ import { AdminService } from '../../../../../core/services/admin.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SocketService } from '../../../../../core/services/socket.service';
 
 @Component({
   selector: 'app-list',
@@ -31,7 +32,11 @@ export class PacientesList implements OnInit {
   mostrarModalAsignacion = false;
   fisioterapeutaSeleccionado: number | null = null;
   enviandoAsignacion = false;
-  constructor(private adminService: AdminService) { }
+
+  constructor(
+    private adminService: AdminService,
+    private socketService: SocketService
+  ) { }
 
   ngOnInit(): void {
     this.cargarPacientes();
@@ -92,10 +97,6 @@ export class PacientesList implements OnInit {
 
   guardarEdicion() {
     const id = this.pacienteForm.usuario_id || this.pacienteForm.id;
-    // La API actualiza usando el parametro ID = id del paciente en base de datos.
-    // wait, admin.controller uses req.params.id as the paciente.id or usuario.id?
-    // Let's check admin.controller.ts: "const { id } = req.params; SELECT usuario_id FROM pacientes WHERE id = ?"
-    // So id must be paciente.id
     this.adminService.actualizarPaciente(this.pacienteForm.id, this.pacienteForm).subscribe({
       next: () => {
         this.cerrarModal();
@@ -152,7 +153,7 @@ export class PacientesList implements OnInit {
         this.enviandoAsignacion = false;
         this.cerrarModalAsignacion();
         this.cargarPacientes(); // Refrescar para ver los cambios de asignación
-        alert(res.message || 'Asignación completada con éxito.');
+        this.socketService.enviarNotificacionLocal('Asignación Clínica', res.message || 'Asignación completada con éxito.');
       },
       error: (err: any) => {
         this.enviandoAsignacion = false;
@@ -160,9 +161,15 @@ export class PacientesList implements OnInit {
         
         // El backend ahora devuelve mensajes específicos de validación
         const errorMsg = err.error?.message || 'Ocurrió un error en la asignación masiva.';
-        alert(`Atención: ${errorMsg}`);
+        this.socketService.enviarNotificacionLocal('Atención', errorMsg);
       }
     });
+  }
+
+  obtenerNombreFisioterapeuta(fisioterapeutaId: any): string {
+    if (!fisioterapeutaId) return 'Sin asignar';
+    const fisio = this.fisioterapeutas.find(f => f.id === Number(fisioterapeutaId));
+    return fisio ? `Dr. ${fisio.nombres} ${fisio.apellidos}` : 'Sin asignar';
   }
 
 }
