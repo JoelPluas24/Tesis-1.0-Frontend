@@ -39,4 +39,12 @@ export class SocketService {
       this.socket.disconnect();
     }
   }
+
+  enviarNotificacionLocal(titulo: string, mensaje: string) {
+    this.notificationSubject.next({
+      titulo,
+      mensaje,
+      fecha: new Date().toISOString()
+    });
+  }
 }
