@@ -63,7 +63,7 @@ export class MisPacientes implements OnInit {
     this.rutinaHistoricaSeleccionada = rutina;
     this.fisioService.obtenerEjerciciosPorRutina(rutina.id).subscribe({
       next: (res: any) => {
-        this.ejerciciosHistoricos = res.data || res;
+        this.ejerciciosHistoricos = res.data || res || [];
       },
       error: (err) => console.error("Error obteniendo ejercicios históricos", err)
     });

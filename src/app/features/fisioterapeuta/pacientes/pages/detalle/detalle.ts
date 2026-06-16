@@ -63,6 +63,15 @@ export class DetallePaciente implements OnInit {
   historialRutinas: any[] = [];
   rutinaHistoricaSeleccionada: any = null;
   ejerciciosHistoricos: any[] = [];
+  finalizandoRutina: boolean = false;
+
+  // Datos Clínicos (Inferencia)
+  editandoDatosClinicos: boolean = false;
+  guardandoDatosClinicos: boolean = false;
+  nivelDolorSeleccionado: number = 0;
+  comorbilidadesSeleccionadas: string[] = [];
+  nivelActividadSeleccionada: string = 'SEDENTARIO';
+  todasComorbilidades: string[] = ['CARDIACA', 'HIPERTENSION', 'DIABETES', 'OBESIDAD'];
 
   constructor(
     private route: ActivatedRoute,
@@ -78,6 +87,7 @@ export class DetallePaciente implements OnInit {
     this.cargarCatalogoPatologias();
     this.cargarRutinaActiva();
     this.cargarProgreso();
+    this.cargarHistorialRutinas();
   }
 
   cargarInformacionPaciente() {
@@ -87,6 +97,9 @@ export class DetallePaciente implements OnInit {
         this.pacienteInfo = pacientes.find((p: any) => p.id === this.pacienteId);
         if (this.pacienteInfo) {
           this.faseActual = this.pacienteInfo.fase_recuperacion || 'AGUDA';
+          this.nivelDolorSeleccionado = this.pacienteInfo.nivel_dolor || 0;
+          this.comorbilidadesSeleccionadas = this.pacienteInfo.comorbilidades ? (typeof this.pacienteInfo.comorbilidades === 'string' ? JSON.parse(this.pacienteInfo.comorbilidades) : this.pacienteInfo.comorbilidades) : [];
+          this.nivelActividadSeleccionada = this.pacienteInfo.nivel_actividad_fisica || 'SEDENTARIO';
         }
       },
       error: (err) => console.error("Error obteniendo detalles del paciente", err)
@@ -198,6 +211,52 @@ export class DetallePaciente implements OnInit {
     });
   }
 
+  cargarHistorialRutinas() {
+    this.fisioService.obtenerHistorialRutinas(this.pacienteId).subscribe({
+      next: (res: any) => {
+        this.historialRutinas = res.historial || [];
+      },
+      error: (err) => console.error('Error al cargar historial de rutinas', err)
+    });
+  }
+
+
+
+  finalizarPlanActivo() {
+    if (!this.rutina?.id) return;
+    if (confirm('¿Está seguro de que desea finalizar el plan terapéutico actual? Este se archivará en el historial.')) {
+      this.finalizandoRutina = true;
+      this.fisioService.finalizarRutina(this.rutina.id).subscribe({
+        next: () => {
+          this.finalizandoRutina = false;
+          this.rutina = null;
+          this.ejercicios = [];
+          this.cargarHistorialRutinas(); // Recargar el historial para ver el plan finalizado
+        },
+        error: (err) => {
+          console.error('Error al finalizar plan', err);
+          this.finalizandoRutina = false;
+          alert('Hubo un error al finalizar el plan.');
+        }
+      });
+    }
+  }
+
+  verEjerciciosHistoricos(rutina: any) {
+    if (this.rutinaHistoricaSeleccionada?.id === rutina.id) {
+      this.rutinaHistoricaSeleccionada = null;
+      this.ejerciciosHistoricos = [];
+      return;
+    }
+    this.rutinaHistoricaSeleccionada = rutina;
+    this.fisioService.obtenerEjerciciosPorRutina(rutina.id).subscribe({
+      next: (res: any) => {
+        this.ejerciciosHistoricos = res.data || res || [];
+      },
+      error: (err) => console.error('Error al cargar ejercicios históricos', err)
+    });
+  }
+
   cargarProgreso() {
     this.fisioService.obtenerProgreso(this.pacienteId).subscribe({
       next: (res: any) => {
@@ -250,6 +309,52 @@ export class DetallePaciente implements OnInit {
         console.error("Error al dar de alta", err);
         this.dandoAlta = false;
         this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al dar de alta al paciente.');
+      }
+    });
+  }
+
+  activarEdicionDatosClinicos() {
+    this.editandoDatosClinicos = true;
+    this.nivelDolorSeleccionado = this.pacienteInfo?.nivel_dolor || 0;
+    this.comorbilidadesSeleccionadas = this.pacienteInfo?.comorbilidades ? (typeof this.pacienteInfo.comorbilidades === 'string' ? JSON.parse(this.pacienteInfo.comorbilidades) : this.pacienteInfo.comorbilidades) : [];
+    this.nivelActividadSeleccionada = this.pacienteInfo?.nivel_actividad_fisica || 'SEDENTARIO';
+  }
+
+  cancelarEdicionDatosClinicos() {
+    this.editandoDatosClinicos = false;
+  }
+
+  toggleComorbilidad(com: string) {
+    if (this.comorbilidadesSeleccionadas.includes(com)) {
+      this.comorbilidadesSeleccionadas = this.comorbilidadesSeleccionadas.filter(c => c !== com);
+    } else {
+      this.comorbilidadesSeleccionadas.push(com);
+    }
+  }
+
+  guardarDatosClinicos() {
+    this.guardandoDatosClinicos = true;
+    const datos = {
+      nivel_dolor: this.nivelDolorSeleccionado,
+      comorbilidades: this.comorbilidadesSeleccionadas,
+      nivel_actividad_fisica: this.nivelActividadSeleccionada
+    };
+    
+    this.fisioService.actualizarDatosClinicosPaciente(this.pacienteId, datos).subscribe({
+      next: () => {
+        this.guardandoDatosClinicos = false;
+        this.editandoDatosClinicos = false;
+        if (this.pacienteInfo) {
+          this.pacienteInfo.nivel_dolor = this.nivelDolorSeleccionado;
+          this.pacienteInfo.comorbilidades = this.comorbilidadesSeleccionadas;
+          this.pacienteInfo.nivel_actividad_fisica = this.nivelActividadSeleccionada;
+        }
+        this.socketService.enviarNotificacionLocal('Evaluación Clínica', 'Datos clínicos actualizados con éxito.');
+      },
+      error: (err) => {
+        console.error("Error al guardar datos clínicos", err);
+        this.guardandoDatosClinicos = false;
+        this.socketService.enviarNotificacionLocal("Error", "No se pudieron guardar los datos clínicos.");
       }
     });
   }

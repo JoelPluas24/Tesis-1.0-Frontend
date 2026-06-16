@@ -22,6 +22,7 @@ export class Form implements OnInit {
   // Ejercicios
   todosLosEjercicios: any[] = [];
   ejerciciosAsociados: Set<number> = new Set<number>();
+  filtroEjercicio: string = '';
   
   cargando = false;
   guardando = false;
@@ -87,6 +88,15 @@ export class Form implements OnInit {
     } else {
       this.ejerciciosAsociados.add(ejercicioId);
     }
+  }
+
+  get ejerciciosFiltrados() {
+    if (!this.filtroEjercicio.trim()) return this.todosLosEjercicios;
+    const term = this.filtroEjercicio.toLowerCase();
+    return this.todosLosEjercicios.filter(e => 
+      (e.nombre && e.nombre.toLowerCase().includes(term)) || 
+      (e.descripcion && e.descripcion.toLowerCase().includes(term))
+    );
   }
 
   estaAsociado(ejercicioId: number): boolean {

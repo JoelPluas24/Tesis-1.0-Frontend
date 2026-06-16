@@ -35,4 +35,12 @@ export class PacienteService {
         return this.http.get(`${this.API}/cumplimiento/historial/${paciente_id}`);
     }
 
+    obtenerMisRutinasAnteriores(paciente_id: number) {
+        return this.http.get(`${this.API}/rutinas/historial/${paciente_id}`);
+    }
+
+    obtenerEjerciciosPorRutina(rutina_id: number) {
+        return this.http.get(`${this.API}/rutinas/${rutina_id}/ejercicios`);
+    }
+
 }

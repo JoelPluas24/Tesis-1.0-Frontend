@@ -48,6 +48,11 @@ export const routes: Routes = [
           import('./features/paciente/mi-rutina/mi-rutina').then((m) => m.MiRutina),
       },
       {
+        path: 'paciente/rutinas-anteriores',
+        loadComponent: () =>
+          import('./features/paciente/rutinas-anteriores/rutinas-anteriores').then((m) => m.RutinasAnterioresComponent),
+      },
+      {
         path: 'fisioterapeuta/mis-pacientes',
         loadComponent: () =>
           import('./features/fisioterapeuta/pacientes/pages/mis-pacientes/mis-pacientes').then(

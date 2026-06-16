@@ -48,6 +48,10 @@ export class FisioterapeutaService {
         return this.http.put(`${environment.apiUrl}/rutinas/${rutina_id}`, data);
     }
 
+    finalizarRutina(rutina_id: number) {
+        return this.http.put(`${environment.apiUrl}/rutinas/${rutina_id}/finalizar`, {});
+    }
+
     eliminarRutina(rutina_id: number) {
         return this.http.delete(`${environment.apiUrl}/rutinas/${rutina_id}`);
     }
@@ -74,5 +78,9 @@ export class FisioterapeutaService {
 
     darAltaPaciente(paciente_id: number) {
         return this.http.put(`${this.API}/pacientes/${paciente_id}/alta`, {});
+    }
+
+    actualizarDatosClinicosPaciente(paciente_id: number, datos: { nivel_dolor?: number, comorbilidades?: string[], nivel_actividad_fisica?: string }) {
+        return this.http.put(`${this.API}/pacientes/${paciente_id}/datos-clinicos`, datos);
     }
 }

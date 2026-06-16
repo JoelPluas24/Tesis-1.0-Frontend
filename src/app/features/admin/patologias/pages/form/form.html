@@ -63,7 +63,16 @@
                     </svg>
                     Ejercicios Recomendados
                 </h3>
-                <p class="text-slate-500 text-sm mt-1">Selecciona los ejercicios que el sistema sugerirá automáticamente a los fisioterapeutas cuando un paciente tenga diagnóstico de {{ patologia.nombre || 'esta patología' }}.</p>
+                <p class="text-slate-500 text-sm mt-1 mb-4">Selecciona los ejercicios que el sistema sugerirá automáticamente a los fisioterapeutas cuando un paciente tenga diagnóstico de {{ patologia.nombre || 'esta patología' }}.</p>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text" [(ngModel)]="filtroEjercicio" placeholder="Buscar ejercicios por nombre o descripción..."
+                        class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder-slate-400">
+                </div>
             </div>
             
             <div class="p-6 flex-1 overflow-y-auto max-h-[500px]">
@@ -74,7 +83,7 @@
 
                 <div *ngIf="todosLosEjercicios.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <!-- Ejercicio Card Toggle -->
-                    <div *ngFor="let ejercicio of todosLosEjercicios" 
+                    <div *ngFor="let ejercicio of ejerciciosFiltrados" 
                          (click)="toggleEjercicio(ejercicio.id)"
                          [class.border-indigo-500]="estaAsociado(ejercicio.id)"
                          [class.bg-indigo-50]="estaAsociado(ejercicio.id)"
