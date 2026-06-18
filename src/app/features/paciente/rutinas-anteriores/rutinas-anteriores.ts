@@ -15,7 +15,7 @@ export class RutinasAnterioresComponent implements OnInit {
   usuario: any;
   cargando = true;
 
-  rutinasAnteriores: any[] = [];
+  rutinasPorPatologia: { patologia: string, rutinas: any[] }[] = [];
   rutinaAnteriorSeleccionada: any = null;
   ejerciciosAnteriores: any[] = [];
 
@@ -46,7 +46,23 @@ export class RutinasAnterioresComponent implements OnInit {
       next: (res: any) => {
         // Filtrar para no mostrar la rutina activa en el historial
         const data = res.data || res.historial || res || [];
-        this.rutinasAnteriores = data.filter((r: any) => r.estado !== 'ACTIVA');
+        const previas = data.filter((r: any) => r.estado !== 'ACTIVA');
+        
+        // Agrupar por patología
+        const map = new Map<string, any[]>();
+        previas.forEach((r: any) => {
+          const pat = r.patologia_nombre || 'Patología General';
+          if (!map.has(pat)) {
+            map.set(pat, []);
+          }
+          map.get(pat)!.push(r);
+        });
+
+        this.rutinasPorPatologia = Array.from(map.entries()).map(([patologia, rutinas]) => ({
+          patologia,
+          rutinas
+        }));
+
         this.cargando = false;
       },
       error: (err) => {

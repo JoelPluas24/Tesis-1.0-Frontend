@@ -9,55 +9,66 @@
 </div>
 
 <div *ngIf="!cargando">
-    <div *ngIf="rutinasAnteriores.length > 0" class="space-y-4">
-        <div *ngFor="let rut of rutinasAnteriores"
-            class="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all hover:border-amber-300 shadow-sm">
+    <div *ngIf="rutinasPorPatologia.length > 0" class="space-y-10">
+        <div *ngFor="let grupo of rutinasPorPatologia">
             
-            <!-- Cabecera clickeable -->
-            <button (click)="verEjerciciosAnteriores(rut)"
-                class="w-full flex items-center justify-between p-5 hover:bg-amber-50/30 transition-colors text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-bold text-slate-800">{{ rut.fecha_inicio | date:'mediumDate':'UTC' }} — {{ rut.fecha_fin | date:'mediumDate':'UTC' }}</p>
-                        <p class="text-xs text-slate-400 font-medium mt-0.5">Estado: {{ rut.estado }}</p>
-                    </div>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="w-5 h-5 text-slate-400 transition-transform"
-                    [class.rotate-180]="rutinaAnteriorSeleccionada?.id === rut.id">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            <h3 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-blue-600">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
                 </svg>
-            </button>
-
-            <!-- Detalle expandible -->
-            <div *ngIf="rutinaAnteriorSeleccionada?.id === rut.id" class="p-5 border-t border-slate-100 bg-slate-50/50">
-                <div *ngIf="rut.observaciones" class="mb-4 bg-amber-50 p-4 rounded-xl border border-amber-100">
-                    <p class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-0.5">Indicaciones del Fisioterapeuta</p>
-                    <p class="text-sm text-amber-800/80 leading-relaxed">{{ rut.observaciones }}</p>
-                </div>
-
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Ejercicios que realizaste</p>
-                <div *ngIf="ejerciciosAnteriores.length > 0" class="space-y-2">
-                    <div *ngFor="let ej of ejerciciosAnteriores"
-                        class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-xl border border-slate-100 shadow-sm gap-2">
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm">{{ ej.nombre }}</p>
-                            <p class="text-xs text-slate-400 mt-1">{{ ej.series }} series · {{ ej.repeticiones }} reps · {{ ej.frecuencia }}</p>
+                {{ grupo.patologia }}
+            </h3>
+            
+            <div class="space-y-4">
+                <div *ngFor="let rut of grupo.rutinas"
+                    class="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all hover:border-amber-300 shadow-sm">
+                    
+                    <!-- Cabecera clickeable -->
+                    <button (click)="verEjerciciosAnteriores(rut)"
+                        class="w-full flex items-center justify-between p-5 hover:bg-amber-50/30 transition-colors text-left">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0 shadow-sm">
+                                <span class="font-black text-sm">{{ rut.porcentaje || 0 }}%</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">Fase: <span class="text-amber-600 uppercase">{{ rut.fase_recuperacion || 'General' }}</span></p>
+                                <p class="text-xs text-slate-500 font-medium mt-1">{{ rut.fecha_inicio | date:'mediumDate':'UTC' }} — {{ rut.fecha_fin | date:'mediumDate':'UTC' }}</p>
+                            </div>
                         </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 text-slate-400 transition-transform"
+                            [class.rotate-180]="rutinaAnteriorSeleccionada?.id === rut.id">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+
+                    <!-- Detalle expandible -->
+                    <div *ngIf="rutinaAnteriorSeleccionada?.id === rut.id" class="p-5 border-t border-slate-100 bg-slate-50/50">
+                        <div *ngIf="rut.observaciones" class="mb-4 bg-amber-50 p-4 rounded-xl border border-amber-100">
+                            <p class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-0.5">Indicaciones del Fisioterapeuta</p>
+                            <p class="text-sm text-amber-800/80 leading-relaxed">{{ rut.observaciones }}</p>
+                        </div>
+
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Ejercicios que realizaste</p>
+                        <div *ngIf="ejerciciosAnteriores.length > 0" class="space-y-2">
+                            <div *ngFor="let ej of ejerciciosAnteriores"
+                                class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-xl border border-slate-100 shadow-sm gap-2">
+                                <div>
+                                    <p class="font-bold text-slate-800 text-sm">{{ ej.nombre }}</p>
+                                    <p class="text-xs text-slate-400 mt-1">{{ ej.series }} series · {{ ej.repeticiones }} reps · {{ ej.frecuencia }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p *ngIf="ejerciciosAnteriores.length === 0" class="text-sm text-slate-400 text-center py-4">Sin ejercicios registrados en esta rutina</p>
                     </div>
                 </div>
-                <p *ngIf="ejerciciosAnteriores.length === 0" class="text-sm text-slate-400 text-center py-4">Sin ejercicios registrados en esta rutina</p>
             </div>
         </div>
     </div>
 
     <!-- Mensaje si no hay historial -->
-    <div *ngIf="rutinasAnteriores.length === 0"
+    <div *ngIf="rutinasPorPatologia.length === 0"
         class="flex flex-col items-center justify-center py-16 px-6 bg-slate-50 border border-slate-100 rounded-3xl text-center shadow-sm">
         <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-5">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">

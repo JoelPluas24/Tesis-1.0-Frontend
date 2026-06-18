@@ -37,12 +37,12 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-slate-700 text-sm font-bold mb-2">Fecha de Inicio</label>
-                        <input type="date" [(ngModel)]="fechaInicio"
+                        <input type="date" [(ngModel)]="fechaInicio" [min]="hoy"
                             class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700" />
                     </div>
                     <div>
                         <label class="block text-slate-700 text-sm font-bold mb-2">Fecha Fin</label>
-                        <input type="date" [(ngModel)]="fechaFin"
+                        <input type="date" [(ngModel)]="fechaFin" [min]="fechaInicio || hoy"
                             class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700" />
                     </div>
                 </div>
@@ -73,17 +73,26 @@
             </p>
 
             <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                <div class="mb-4">
-                    <label class="block text-slate-700 text-sm font-bold mb-2">Seleccione un ejercicio</label>
+                <div class="mb-4 relative">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-slate-700 text-sm font-bold">Seleccione un ejercicio</label>
+                        <button *ngIf="reglasExplicacion.length > 0" (click)="abrirExplicacionModal()" class="text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1.5 text-sm font-semibold bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-md border border-blue-100" title="¿Por qué se recomiendan estos ejercicios?">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Análisis del Motor
+                        </button>
+                    </div>
                     <select [(ngModel)]="ejercicioSeleccionadoId"
                         class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700 shadow-sm font-medium">
                         <option value="">-- Examinar biblioteca de ejercicios --</option>
-                        <optgroup label="Recomendados (Según Patología/Fase)">
+                        <optgroup label="Recomendados">
                             <option *ngFor="let ej of ejerciciosRecomendados" [value]="ej.id">
                                 {{ ej.nombre }}
                             </option>
                         </optgroup>
-                        <optgroup label="Catálogo General">
+                        <optgroup label="Catálogo General (Patología)">
                             <option *ngFor="let ej of todosLosEjercicios" [value]="ej.id">
                                 {{ ej.nombre }}
                             </option>
@@ -194,4 +203,42 @@
 
     </div>
 
+</div>
+
+<!-- Modal de Análisis Clínico -->
+<div *ngIf="mostrarModalExplicacion" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 overflow-hidden flex flex-col max-h-[85vh]">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+            <h3 class="text-xl font-black text-slate-800 flex items-center gap-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-blue-600">
+                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>
+                Análisis Clínico del Sistema
+            </h3>
+            <button (click)="cerrarExplicacionModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto">
+            <p class="text-sm text-slate-500 mb-6 font-medium">
+                El motor de inferencia ha personalizado esta lista de ejercicios sugeridos basándose en el perfil actual del paciente y aplicando las siguientes reglas de oro:
+            </p>
+            <div class="space-y-4">
+                <div *ngFor="let regla of reglasExplicacion" class="bg-slate-50 rounded-xl p-5 flex items-start gap-4">
+                    <div class="mt-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-800 tracking-wide mb-1.5">{{ regla.titulo }}</p>
+                        <p class="text-sm text-slate-500 leading-relaxed">{{ regla.descripcion }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-6 border-t border-slate-100 flex justify-end bg-white">
+            <button (click)="cerrarExplicacionModal()" class="px-6 py-2.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 transition-colors">Entendido</button>
+        </div>
+    </div>
 </div>

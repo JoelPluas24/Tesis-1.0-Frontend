@@ -68,4 +68,22 @@ export class MisPacientes implements OnInit {
       error: (err) => console.error("Error obteniendo ejercicios históricos", err)
     });
   }
+
+  getComorbilidadesStr(comorbilidades: any): string {
+    if (!comorbilidades) return 'Ninguna';
+    if (typeof comorbilidades === 'string') {
+      try {
+        const parsed = JSON.parse(comorbilidades);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.join(', ');
+        }
+      } catch (e) {
+        return comorbilidades;
+      }
+    }
+    if (Array.isArray(comorbilidades) && comorbilidades.length > 0) {
+      return comorbilidades.join(', ');
+    }
+    return 'Ninguna';
+  }
 }

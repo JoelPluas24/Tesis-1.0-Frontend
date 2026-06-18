@@ -22,6 +22,11 @@ export class AsignarRutina implements OnInit {
   fechaInicio = ''; //new Date().toISOString().split('T')[0];
   fechaFin = '';
   observaciones = '';
+  hoy = new Date().toISOString().split('T')[0];
+
+  // Explicación de Inferencia
+  mostrarModalExplicacion: boolean = false;
+  reglasExplicacion: { titulo: string, descripcion: string }[] = [];
 
   // Control de Ejercicios Seleccionados
   ejerciciosAgregados: any[] = [];
@@ -43,7 +48,6 @@ export class AsignarRutina implements OnInit {
     this.pacienteId = Number(this.route.snapshot.paramMap.get('id'));
     this.cargarInformacionPaciente();
     this.cargarRecomendaciones();
-    this.cargarTodosLosEjercicios();
     this.cargarRutinaActual();
     this.cargarHistorialRutinas();
   }
@@ -96,25 +100,30 @@ export class AsignarRutina implements OnInit {
         const payload = res.data || res;
         this.faseRecuperacion = payload.fase_recuperacion || 'Sin Fase';
         this.ejerciciosRecomendados = payload.ejercicios_recomendados || [];
+        const reglasObj = payload.reglas_aplicadas || {};
+        
+        const descripcionesReglas: any = {
+          'edad_avanzada': { titulo: 'EDAD AVANZADA', descripcion: 'El paciente es mayor a 60 años. Se filtraron ejercicios de alta dificultad por precaución.' },
+          'fase_aguda': { titulo: 'FASE AGUDA', descripcion: 'El paciente está en fase AGUDA. Se eliminaron ejercicios de nivel ALTO y se ordenó la lista de menor a mayor dificultad para un calentamiento seguro.' },
+          'nivel_dolor_alto': { titulo: 'NIVEL DOLOR ALTO', descripcion: 'El paciente reportó dolor severo (≥ 6). Se limitó el catálogo estrictamente a ejercicios de nivel BAJO.' },
+          'comorbilidad_cardiaca': { titulo: 'COMORBILIDAD CARDIACA', descripcion: 'El paciente tiene comorbilidades cardíacas o hipertensión. Se evitaron ejercicios de nivel ALTO por precaución cardiovascular.' },
+          'fase_fortalecimiento': { titulo: 'FASE FORTALECIMIENTO', descripcion: 'El paciente está en fase de FORTALECIMIENTO. Se permiten todos los niveles de dificultad ordenados de menor a mayor para respetar el calentamiento.' },
+          'vida_sedentaria': { titulo: 'VIDA SEDENTARIA', descripcion: 'El paciente tiene un estilo de vida SEDENTARIO. Se limitaron las opciones solo a ejercicios de nivel BAJO.' }
+        };
+
+        this.reglasExplicacion = Object.keys(reglasObj)
+          .filter(key => reglasObj[key])
+          .map(key => descripcionesReglas[key] || { titulo: key.toUpperCase().replace(/_/g, ' '), descripcion: 'Regla aplicada por el motor de inferencia.' });
+          
+        const catalogoBase = payload.catalogo_general || [];
+        this.todosLosEjercicios = catalogoBase;
       },
       error: (err) => {
         console.error('Error cargando recomendaciones', err);
       },
     });
   }
-
-  cargarTodosLosEjercicios() {
-    this.fisioService.obtenerTodosLosEjercicios().subscribe({
-      next: (res: any) => {
-        const payload = res.data || res;
-        this.todosLosEjercicios = Array.isArray(payload) ? payload : [];
-      },
-      error: (err) => {
-        console.error('Error cargando el catálogo general', err);
-      },
-    });
-  }
-
+  
   agregarEjercicio() {
     if (!this.ejercicioSeleccionadoId) {
       this.socketService.enviarNotificacionLocal('Ejercicio', 'Por favor seleccione un ejercicio');
@@ -256,5 +265,13 @@ export class AsignarRutina implements OnInit {
       },
       error: (err) => console.error("Error obteniendo ejercicios históricos", err)
     });
+  }
+
+  abrirExplicacionModal() {
+    this.mostrarModalExplicacion = true;
+  }
+
+  cerrarExplicacionModal() {
+    this.mostrarModalExplicacion = false;
   }
 }
