@@ -103,12 +103,12 @@ export class AsignarRutina implements OnInit {
         const reglasObj = payload.reglas_aplicadas || {};
         
         const descripcionesReglas: any = {
-          'edad_avanzada': { titulo: 'EDAD AVANZADA', descripcion: 'El paciente es mayor a 60 años. Se filtraron ejercicios de alta dificultad por precaución.' },
-          'fase_aguda': { titulo: 'FASE AGUDA', descripcion: 'El paciente está en fase AGUDA. Se eliminaron ejercicios de nivel ALTO y se ordenó la lista de menor a mayor dificultad para un calentamiento seguro.' },
-          'nivel_dolor_alto': { titulo: 'NIVEL DOLOR ALTO', descripcion: 'El paciente reportó dolor severo (≥ 6). Se limitó el catálogo estrictamente a ejercicios de nivel BAJO.' },
-          'comorbilidad_cardiaca': { titulo: 'COMORBILIDAD CARDIACA', descripcion: 'El paciente tiene comorbilidades cardíacas o hipertensión. Se evitaron ejercicios de nivel ALTO por precaución cardiovascular.' },
-          'fase_fortalecimiento': { titulo: 'FASE FORTALECIMIENTO', descripcion: 'El paciente está en fase de FORTALECIMIENTO. Se permiten todos los niveles de dificultad ordenados de menor a mayor para respetar el calentamiento.' },
-          'vida_sedentaria': { titulo: 'VIDA SEDENTARIA', descripcion: 'El paciente tiene un estilo de vida SEDENTARIO. Se limitaron las opciones solo a ejercicios de nivel BAJO.' }
+          'edad_avanzada': { titulo: 'EDAD AVANZADA', descripcion: 'El paciente es mayor a 60 años. Se excluyeron ejercicios con impacto articular y de alta dificultad para proteger la integridad ósea y articular.' },
+          'fase_aguda': { titulo: 'FASE AGUDA', descripcion: 'El paciente está en fase AGUDA. Se limitó el catálogo a ejercicios de tipo Movilidad y Estiramiento, sin carga ni impacto articular, ordenados de menor a mayor dificultad.' },
+          'nivel_dolor_alto': { titulo: 'NIVEL DOLOR ALTO', descripcion: 'El paciente reportó dolor severo (≥ 6). Se restringió a ejercicios de tipo Movilidad o Estiramiento que no requieran carga física.' },
+          'comorbilidad_cardiaca': { titulo: 'COMORBILIDAD CARDIACA', descripcion: 'El paciente tiene comorbilidades cardíacas o hipertensión. Se excluyeron ejercicios que requieran carga y los de dificultad alta para evitar esfuerzo cardiovascular excesivo.' },
+          'fase_fortalecimiento': { titulo: 'FASE FORTALECIMIENTO', descripcion: 'El paciente está en fase de FORTALECIMIENTO. Se permiten todos los tipos de ejercicios (incluidos con carga e impacto) ordenados de menor a mayor dificultad para progresión segura.' },
+          'vida_sedentaria': { titulo: 'VIDA SEDENTARIA', descripcion: 'El paciente tiene un estilo de vida SEDENTARIO. Se excluyeron ejercicios con impacto articular y los que requieran carga física para evitar lesiones por desacondicionamiento.' }
         };
 
         this.reglasExplicacion = Object.keys(reglasObj)

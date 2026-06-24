@@ -59,6 +59,55 @@
                     </div>
                 </div>
 
+                <!-- Clasificación Clínica del Ejercicio -->
+                <div class="bg-sky-50/50 p-6 rounded-xl border border-sky-100">
+                    <label class="block text-slate-700 text-sm font-bold mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 text-sky-500">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                        </svg>
+                        Clasificación Clínica
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div>
+                            <label class="block text-slate-600 text-xs font-bold mb-1.5 uppercase tracking-wider">Tipo
+                                de Ejercicio</label>
+                            <select [(ngModel)]="ejercicio.tipo_ejercicio" name="tipo_ejercicio"
+                                class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium">
+                                <option value="MOVILIDAD">Movilidad</option>
+                                <option value="ESTIRAMIENTO">Estiramiento</option>
+                                <option value="FORTALECIMIENTO">Fortalecimiento</option>
+                                <option value="EQUILIBRIO">Equilibrio</option>
+                                <option value="FUNCIONAL">Funcional</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <label class="block text-slate-600 text-xs font-bold mb-1.5 uppercase tracking-wider">¿Requiere Carga?</label>
+                            <label class="relative inline-flex items-center cursor-pointer mt-1">
+                                <input type="checkbox" [(ngModel)]="ejercicio.requiere_carga" name="requiere_carga"
+                                    class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600">
+                                </div>
+                                <span class="ms-3 text-sm font-medium text-slate-700">{{ ejercicio.requiere_carga ? 'Sí' : 'No' }}</span>
+                            </label>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <label class="block text-slate-600 text-xs font-bold mb-1.5 uppercase tracking-wider">¿Impacto Articular?</label>
+                            <label class="relative inline-flex items-center cursor-pointer mt-1">
+                                <input type="checkbox" [(ngModel)]="ejercicio.impacto_articular"
+                                    name="impacto_articular" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500">
+                                </div>
+                                <span class="ms-3 text-sm font-medium text-slate-700">{{ ejercicio.impacto_articular ? 'Sí' : 'No' }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-3">Estos criterios son utilizados por el motor de inferencia para generar recomendaciones clínicas más precisas.</p>
+                </div>
+
                 <div>
                     <label class="block text-slate-700 text-sm font-bold mb-2">Descripción General</label>
                     <textarea [(ngModel)]="ejercicio.descripcion" name="descripcion" rows="3"

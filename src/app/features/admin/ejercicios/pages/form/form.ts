@@ -19,6 +19,9 @@ export class Form implements OnInit {
     indicaciones: '',
     contraindicaciones: '',
     nivel_dificultad: 'BAJO',
+    tipo_ejercicio: 'MOVILIDAD',
+    requiere_carga: false,
+    impacto_articular: false,
     video_url: ''
   };
 
