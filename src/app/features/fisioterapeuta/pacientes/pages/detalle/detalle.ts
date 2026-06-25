@@ -222,6 +222,17 @@ export class DetallePaciente implements OnInit {
 
 
 
+  get haIniciadoRutina(): boolean {
+    if (!this.rutina || !this.rutina.fecha_inicio) return false;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    // Convertir fecha de inicio (ISO string o Date) a objeto Date local
+    const parts = this.rutina.fecha_inicio.split('T')[0].split('-');
+    const fechaInicio = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    fechaInicio.setHours(0, 0, 0, 0);
+    return hoy >= fechaInicio;
+  }
+
   finalizarPlanActivo() {
     if (!this.rutina?.id) return;
     if (confirm('¿Está seguro de que desea finalizar el plan terapéutico actual? Este se archivará en el historial.')) {
@@ -237,6 +248,23 @@ export class DetallePaciente implements OnInit {
           console.error('Error al finalizar plan', err);
           this.finalizandoRutina = false;
           alert('Hubo un error al finalizar el plan.');
+        }
+      });
+    }
+  }
+
+  eliminarPlanActivo() {
+    if (!this.rutina?.id) return;
+    if (confirm('¿Está seguro de que desea eliminar este plan terapéutico de forma permanente?')) {
+      this.fisioService.eliminarRutina(this.rutina.id).subscribe({
+        next: () => {
+          this.rutina = null;
+          this.ejercicios = [];
+          alert('Plan eliminado exitosamente.');
+        },
+        error: (err) => {
+          console.error('Error al eliminar plan', err);
+          alert('Hubo un error al eliminar el plan.');
         }
       });
     }

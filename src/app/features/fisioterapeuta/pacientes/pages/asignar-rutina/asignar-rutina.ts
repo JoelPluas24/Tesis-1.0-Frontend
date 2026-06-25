@@ -220,6 +220,16 @@ export class AsignarRutina implements OnInit {
     }
   }
 
+  get haIniciadoRutina(): boolean {
+    if (!this.fechaInicio) return false;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const parts = this.fechaInicio.split('-');
+    const fechaInicioDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    fechaInicioDate.setHours(0, 0, 0, 0);
+    return hoy >= fechaInicioDate;
+  }
+
   eliminarRutina() {
     if (!this.rutinaActualId) return;
     if (!confirm('¿Está seguro que desea eliminar esta rutina de forma permanente?')) return;
@@ -232,6 +242,22 @@ export class AsignarRutina implements OnInit {
       error: (err) => {
         console.error('Error eliminando rutina', err);
         this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al eliminar la rutina');
+      }
+    });
+  }
+
+  finalizarRutina() {
+    if (!this.rutinaActualId) return;
+    if (!confirm('¿Está seguro de que desea finalizar el plan terapéutico actual? Este se archivará en el historial.')) return;
+    
+    this.fisioService.finalizarRutina(this.rutinaActualId).subscribe({
+      next: () => {
+        this.socketService.enviarNotificacionLocal('Rutina Finalizada', 'Rutina finalizada exitosamente');
+        this.router.navigate(['/fisioterapeuta/pacientes', this.pacienteId]);
+      },
+      error: (err) => {
+        console.error('Error finalizando rutina', err);
+        this.socketService.enviarNotificacionLocal('Error', 'Ocurrió un error al finalizar la rutina');
       }
     });
   }

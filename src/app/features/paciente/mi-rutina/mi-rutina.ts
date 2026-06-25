@@ -104,7 +104,13 @@ export class MiRutina implements OnInit {
       next: (res: any) => {
         // El backend devuelve { success, message, data: [...] }
         const datos = Array.isArray(res) ? res : (res?.data ?? []);
-        this.historial = Array.isArray(datos) ? datos : [];
+        this.historial = (Array.isArray(datos) ? datos : []).map(h => {
+          return {
+            ...h,
+            expandido: false,
+            lista_ejercicios: h.nombres_ejercicios ? h.nombres_ejercicios.split(',').map((e: string) => e.trim()) : []
+          };
+        });
 
         this.fechasCompletadas = new Set(
           this.historial.map((h: any) => h.fecha.split('T')[0])
@@ -212,11 +218,22 @@ export class MiRutina implements OnInit {
     return hoyStr > cleanFinStr;
   }
 
+  get planAunNoInicia(): boolean {
+    if (!this.fechaInicioPlan) return false;
+    const hoyStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Guayaquil' }).format(new Date());
+    const cleanInicioStr = this.fechaInicioPlan.split('T')[0];
+    return hoyStr < cleanInicioStr;
+  }
+
   getArray(n: number): any[] {
     return Array(n);
   }
 
   marcarCompletado(ejercicio: any) {
+    if (this.planAunNoInicia) {
+      this.socketService.enviarNotificacionLocal("Plan Futuro", "Tu plan aún no ha iniciado. Podrás registrar tu avance a partir de la fecha de inicio.");
+      return;
+    }
     if (this.planExpirado) {
       this.socketService.enviarNotificacionLocal("Plan Finalizado", "Tu plan de recuperación ha concluido. Por favor, contacta a tu fisioterapeuta.");
       return;
