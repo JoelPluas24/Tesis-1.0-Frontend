@@ -16,8 +16,8 @@
         <p class="text-slate-500 font-medium mt-1">Supervisión integral de progreso y tratamiento</p>
     </div>
     <div class="flex flex-wrap gap-3">
-        <!-- Botón Dar de Alta -->
-        <button (click)="darAlta()" [disabled]="dandoAlta"
+        <!-- Botón Dar de Alta (sólo visible si hay una patología asignada) -->
+        <button *ngIf="patologiaActual" (click)="darAlta()" [disabled]="dandoAlta"
             class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2.5 rounded-xl shadow-md shadow-emerald-200 transition-all font-semibold cursor-pointer">
             <span *ngIf="dandoAlta"
                 class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -519,6 +519,9 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
+                            <span *ngIf="rut.fecha_finalizacion" class="text-xs font-medium text-red-500 mr-2">
+                                Finalizado: {{ rut.fecha_finalizacion | date:'mediumDate':'UTC' }}
+                            </span>
                             <span class="text-xs font-bold px-2 py-1 rounded border"
                                 [ngClass]="rut.estado === 'ACTIVA' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'">
                                 {{ rut.estado }}

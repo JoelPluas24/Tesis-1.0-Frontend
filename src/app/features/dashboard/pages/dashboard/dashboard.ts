@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../core/services/user.service';
 import { AdminService } from '../../../../core/services/admin.service';
@@ -11,7 +12,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, BaseChartDirective],
+  imports: [CommonModule, RouterLink, BaseChartDirective, FormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -19,6 +20,7 @@ export class Dashboard implements OnInit {
   usuario: any;
   reporte: any = null;
   cargandoReporte = false;
+  filtroTiempo: string = 'todo';
 
   // Chart configuration: Distibución de Usuarios (Doughnut)
   public userChartType: ChartType = 'doughnut';
@@ -102,17 +104,41 @@ export class Dashboard implements OnInit {
 
   cargarReporteAdmin() {
     this.cargandoReporte = true;
-    this.adminService.obtenerReporteGeneral().subscribe({
+    let fechaInicio: string | undefined;
+    let fechaFin: string | undefined;
+    
+    const hoy = new Date();
+    
+    if (this.filtroTiempo === 'este_mes') {
+      fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+      fechaFin = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).toISOString().split('T')[0];
+    } else if (this.filtroTiempo === 'mes_pasado') {
+      fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1).toISOString().split('T')[0];
+      fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), 0).toISOString().split('T')[0];
+    } else if (this.filtroTiempo === 'ultimos_7_dias') {
+      const pastDate = new Date();
+      pastDate.setDate(hoy.getDate() - 7);
+      fechaInicio = pastDate.toISOString().split('T')[0];
+      fechaFin = hoy.toISOString().split('T')[0];
+    }
+
+    this.adminService.obtenerReporteGeneral(fechaInicio, fechaFin).subscribe({
       next: (res: any) => {
-        this.reporte = res;
+        this.reporte = res.data || res;
         this.cargandoReporte = false;
         this.setupCharts();
       },
       error: (err) => {
-        console.error('No se pudo cargar el reporte del Dashboard', err);
+        console.error('No se pudo cargar el reporte admin', err);
         this.cargandoReporte = false;
       },
     });
+  }
+
+  cambiarFiltro() {
+    if (this.usuario?.rol === 'ADMIN') {
+      this.cargarReporteAdmin();
+    }
   }
 
   setupCharts() {

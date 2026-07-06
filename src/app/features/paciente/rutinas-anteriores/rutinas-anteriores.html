@@ -61,10 +61,13 @@
                         <div *ngIf="ejerciciosAnteriores.length > 0" class="space-y-2">
                             <div *ngFor="let ej of ejerciciosAnteriores"
                                 class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-xl border border-slate-100 shadow-sm gap-2">
-                                <div>
+                                <div class="flex-1">
                                     <p class="font-bold text-slate-800 text-sm">{{ ej.nombre }}</p>
                                     <p class="text-xs text-slate-400 mt-1">{{ ej.series }} series · {{ ej.repeticiones
                                         }} reps · {{ ej.frecuencia }}</p>
+                                </div>
+                                <div class="shrink-0 flex items-center justify-center">
+                                    <span class="text-emerald-500 font-bold text-lg font-handwriting">({{ ej.veces_realizado || 0 }})</span>
                                 </div>
                             </div>
                         </div>

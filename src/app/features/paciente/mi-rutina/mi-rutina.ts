@@ -37,6 +37,11 @@ export class MiRutina implements OnInit {
   fechasCompletadas: Set<string> = new Set();
   today = new Date();
 
+  get historialActivo() {
+    if (!this.rutina) return [];
+    return this.historial.filter(h => h.rutina_id === this.rutina.id);
+  }
+
 
   constructor(
     private pacienteService: PacienteService,

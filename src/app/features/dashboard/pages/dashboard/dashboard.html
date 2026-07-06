@@ -11,6 +11,19 @@
 
     <!-- VISTA EXCLUSIVA DEL ADMINISTRADOR -->
     <div *ngIf="usuario?.rol === 'ADMIN'">
+        
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-700">Resumen Estadístico</h2>
+            <div class="flex items-center gap-3">
+                <label for="filtroTiempo" class="text-sm font-medium text-gray-500">Filtrar por:</label>
+                <select id="filtroTiempo" [(ngModel)]="filtroTiempo" (change)="cambiarFiltro()" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 shadow-sm">
+                    <option value="todo">Todo el tiempo</option>
+                    <option value="este_mes">Este mes</option>
+                    <option value="mes_pasado">Mes pasado</option>
+                    <option value="ultimos_7_dias">Últimos 7 días</option>
+                </select>
+            </div>
+        </div>
 
         <div *ngIf="cargandoReporte" class="text-gray-500 py-6">
             Cargando estadísticas de la plataforma...

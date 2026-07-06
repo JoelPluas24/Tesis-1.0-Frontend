@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { SocketService } from '../../../../../core/services/socket.service';
+import { PdfService } from '../../../../../core/services/pdf.service';
 
 @Component({
   selector: 'app-detalle',
@@ -77,7 +78,8 @@ export class DetallePaciente implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fisioService: FisioterapeutaService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private pdfService: PdfService
   ) { }
 
   ngOnInit(): void {
@@ -327,10 +329,21 @@ export class DetallePaciente implements OnInit {
   darAlta() {
     if (!confirm('¿Está seguro de querer dar de alta a este paciente? Esto inactivará su cuenta y finalizará su tratamiento.')) return;
     this.dandoAlta = true;
+    
+    // Compilamos información de la rutina activa si hay
+    const rutinaInfo = {
+      totalDiasPlan: this.totalDias,
+      diasCompletados: this.ejerciciosRealizados > 0 ? Math.floor(this.ejerciciosRealizados / (this.ejerciciosDiarios || 1)) : 0,
+      progresoGlobal: this.porcentajeCumplimiento
+    };
+
+    // Generar el PDF antes de limpiar los datos en BD
+    this.pdfService.generarInformeDeAlta(this.pacienteInfo, this.patologiaActual, rutinaInfo, this.historialRutinas);
+
     this.fisioService.darAltaPaciente(this.pacienteId).subscribe({
       next: () => {
         this.dandoAlta = false;
-        this.socketService.enviarNotificacionLocal('Alta Médica', 'El paciente ha sido dado de alta exitosamente.');
+        this.socketService.enviarNotificacionLocal('Alta Médica', 'El paciente ha sido dado de alta exitosamente y el informe PDF ha sido descargado.');
         this.router.navigate(['/fisioterapeuta/mis-pacientes']);
       },
       error: (err) => {

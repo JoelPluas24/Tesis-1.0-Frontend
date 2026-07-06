@@ -29,8 +29,15 @@ export class AdminService {
     }
 
     //Reporte general Dashboard
-    obtenerReporteGeneral() {
-        return this.http.get(`${this.API}/reporte-general`);
+    obtenerReporteGeneral(fechaInicio?: string, fechaFin?: string) {
+        let params = new URLSearchParams();
+        if (fechaInicio) params.append('fechaInicio', fechaInicio);
+        if (fechaFin) params.append('fechaFin', fechaFin);
+        
+        const queryString = params.toString();
+        const url = queryString ? `${this.API}/reporte-general?${queryString}` : `${this.API}/reporte-general`;
+        
+        return this.http.get(url);
     }
 
     // Actualizar Paciente
