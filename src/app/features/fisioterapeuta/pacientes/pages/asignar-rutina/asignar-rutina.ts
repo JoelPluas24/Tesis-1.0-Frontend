@@ -21,6 +21,7 @@ export class AsignarRutina implements OnInit {
   // Formulario General
   fechaInicio = ''; //new Date().toISOString().split('T')[0];
   fechaFin = '';
+  totalSesiones = 10;
   observaciones = '';
   hoy = new Date().toISOString().split('T')[0];
 
@@ -74,6 +75,7 @@ export class AsignarRutina implements OnInit {
           if (payload.rutina.fecha_fin) {
             this.fechaFin = payload.rutina.fecha_fin.split('T')[0];
           }
+          this.totalSesiones = payload.rutina.total_sesiones || 10;
           this.observaciones = payload.rutina.observaciones || '';
         }
         if (payload.ejercicios && payload.ejercicios.length > 0) {
@@ -185,6 +187,7 @@ export class AsignarRutina implements OnInit {
       paciente_id: this.pacienteId,
       fecha_inicio: this.fechaInicio,
       fecha_fin: this.fechaFin,
+      total_sesiones: this.totalSesiones,
       observaciones: this.observaciones,
       // Al backend solo se le envía los datos necesarios, no el nombre text
       ejercicios: this.ejerciciosAgregados.map((e) => ({

@@ -34,8 +34,8 @@ export class DetallePaciente implements OnInit {
   totalEjercicios: number = 0;
   ejerciciosRealizados: number = 0;
   porcentajeCumplimiento: number = 0;
-  totalDias: number = 1;
-  ejerciciosDiarios: number = 0;
+  totalSesiones: number = 10;
+  ejerciciosPorSesion: number = 0;
 
   // Configuración del Gráfico (Bar Chart)
   public progressChartType: ChartType = 'bar';
@@ -328,8 +328,8 @@ export class DetallePaciente implements OnInit {
         this.porcentajeCumplimiento = res.porcentaje_cumplimiento || 0;
         
         // Información adicional para el cálculo
-        this.totalDias = res.total_dias || 1;
-        this.ejerciciosDiarios = this.totalEjercicios > 0 ? (this.totalEjercicios / this.totalDias) : 0;
+        this.totalSesiones = res.total_dias || 10; // Backend still returns total_dias key for compatibility but it's sessions now
+        this.ejerciciosPorSesion = this.totalEjercicios > 0 ? (this.totalEjercicios / this.totalSesiones) : 0;
 
         this.setupChartData();
       },
@@ -364,8 +364,8 @@ export class DetallePaciente implements OnInit {
     
     // Compilamos información de la rutina activa si hay
     const rutinaInfo = {
-      totalDiasPlan: this.totalDias,
-      diasCompletados: this.ejerciciosRealizados > 0 ? Math.floor(this.ejerciciosRealizados / (this.ejerciciosDiarios || 1)) : 0,
+      totalDiasPlan: this.totalSesiones,
+      diasCompletados: this.ejerciciosRealizados > 0 ? Math.floor(this.ejerciciosRealizados / (this.ejerciciosPorSesion || 1)) : 0,
       progresoGlobal: this.porcentajeCumplimiento
     };
 

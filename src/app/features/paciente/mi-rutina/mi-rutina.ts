@@ -23,7 +23,7 @@ export class MiRutina implements OnInit {
   // Progreso
   progresoGlobal: number = 0;
   diasCompletados: number = 0;
-  totalDiasPlan: number = 0;
+  totalSesionesPlan: number = 0;
   fechaInicioPlan: string = '';
   fechaFinPlan: string = '';
 
@@ -78,26 +78,17 @@ export class MiRutina implements OnInit {
       next: (res: any) => {
         const data = res.data || res;
         this.progresoGlobal = data.porcentaje_cumplimiento || 0;
-        this.totalDiasPlan = data.total_dias || 0;
+        this.totalSesionesPlan = data.total_dias || 10; // total_dias actually contains total_sesiones from backend
         this.fechaInicioPlan = data.fecha_inicio || '';
         this.fechaFinPlan = data.fecha_fin || '';
 
-        if (this.fechaInicioPlan && this.totalDiasPlan > 0) {
-          const cleanStr = this.fechaInicioPlan.split('T')[0];
-          const [year, month, day] = cleanStr.split('-').map(Number);
-          const inicio = new Date(year, month - 1, day);
-          const hoy = new Date();
-          inicio.setHours(0, 0, 0, 0);
-          hoy.setHours(0, 0, 0, 0);
-          const diffTime = hoy.getTime() - inicio.getTime();
-          let diaActual = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-          if (diaActual < 1) diaActual = 1;
-          if (diaActual > this.totalDiasPlan) diaActual = this.totalDiasPlan;
-
-          this.diasCompletados = diaActual;
-        } else {
-          this.diasCompletados = 0;
+        // Ahora solo leemos los ejercicios realizados para calcular las sesiones completadas
+        this.diasCompletados = data.ejercicios_realizados > 0 && data.total_ejercicios > 0 
+           ? Math.floor(data.ejercicios_realizados / (data.total_ejercicios / this.totalSesionesPlan))
+           : 0;
+        
+        if (this.diasCompletados > this.totalSesionesPlan) {
+           this.diasCompletados = this.totalSesionesPlan;
         }
       },
       error: (err: HttpErrorResponse) => console.error("Error al cargar progreso", err)
