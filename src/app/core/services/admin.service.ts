@@ -70,6 +70,16 @@ export class AdminService {
         return this.http.delete(`${this.API}/fisioterapeutas/${id}`);
     }
 
+    // Listar Fisioterapeutas Inactivos
+    obtenerFisioterapeutasInactivos() {
+        return this.http.get(`${this.API}/fisioterapeutas-inactivos`);
+    }
+
+    // Reactivar Fisioterapeuta
+    reactivarFisioterapeuta(id: number) {
+        return this.http.put(`${this.API}/fisioterapeutas/${id}/reactivar`, {});
+    }
+
     // Asignación Masiva
     asignarPacientes(fisioterapeutaId: number, pacienteIds: number[]) {
         return this.http.put(`${this.API}/asignar-paciente`, {

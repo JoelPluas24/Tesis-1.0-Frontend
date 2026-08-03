@@ -48,10 +48,11 @@ export class RutinasAnterioresComponent implements OnInit {
         const data = res.data || res.historial || res || [];
         const previas = data.filter((r: any) => r.estado !== 'ACTIVA');
         
-        // Agrupar por patología
+        // Agrupar por patología y fisio
         const map = new Map<string, any[]>();
         previas.forEach((r: any) => {
-          const pat = r.patologia_nombre || 'Patología General';
+          const fisio = r.fisioterapeuta_nombre ? ` - Rehabilitador ${r.fisioterapeuta_nombre}` : ' - Rehabilitador Dr. Joel Pluas';
+          const pat = (r.patologia_nombre || 'Patología General') + fisio;
           if (!map.has(pat)) {
             map.set(pat, []);
           }

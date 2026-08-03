@@ -91,6 +91,11 @@ export const routes: Routes = [
         component: FisioterapeutasList,
       },
       {
+        path: 'admin/fisioterapeutas/inactivos',
+        loadComponent: () =>
+          import('./features/admin/fisioterapeutas/pages/inactivos/inactivos').then((m) => m.FisioterapeutasInactivosComponent),
+      },
+      {
         path: 'admin/fisioterapeutas/crear',
         component: FisioCreate,
       },

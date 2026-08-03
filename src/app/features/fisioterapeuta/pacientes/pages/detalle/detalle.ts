@@ -163,11 +163,43 @@ export class DetallePaciente implements OnInit {
 
   activarEdicionPatologia() {
     this.editandoPatologia = true;
+    if (this.patologiaActual) {
+      this.patologiaSeleccionadaId = this.patologiaActual.id;
+      this.terminoBusquedaPatologia = `${this.patologiaActual.nombre} (${this.patologiaActual.nivel_gravedad})`;
+    } else {
+      this.patologiaSeleccionadaId = '';
+      this.terminoBusquedaPatologia = '';
+    }
   }
 
   cancelarEdicionPatologia() {
     this.editandoPatologia = false;
+    this.dropdownPatologiaAbierto = false;
     this.patologiaSeleccionadaId = this.patologiaActual ? this.patologiaActual.id : '';
+  }
+
+  // Para el buscador de patologías
+  dropdownPatologiaAbierto: boolean = false;
+  terminoBusquedaPatologia: string = '';
+
+  get patologiasFiltradas() {
+    if (!this.terminoBusquedaPatologia) return this.todasPatologias;
+    const term = this.terminoBusquedaPatologia.toLowerCase().trim();
+    return this.todasPatologias.filter(p => 
+      p.nombre.toLowerCase().includes(term) || 
+      p.nivel_gravedad.toLowerCase().includes(term)
+    );
+  }
+
+  seleccionarPatologia(pat: any) {
+    this.patologiaSeleccionadaId = pat.id;
+    this.terminoBusquedaPatologia = `${pat.nombre} (${pat.nivel_gravedad})`;
+    this.dropdownPatologiaAbierto = false;
+  }
+
+  abrirDropdownPatologia() {
+    this.dropdownPatologiaAbierto = true;
+    this.terminoBusquedaPatologia = ''; // Limpiar para que vea todas al abrir
   }
 
   guardarPatologia() {

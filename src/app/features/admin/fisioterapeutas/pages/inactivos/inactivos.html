@@ -1,0 +1,91 @@
+<div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Fisioterapeutas Inactivos</h2>
+        <p class="text-slate-500 font-medium mt-1">Personal médico dado de baja en el sistema</p>
+    </div>
+</div>
+
+<div *ngIf="cargando" class="flex flex-col items-center justify-center py-20 px-6">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 font-medium">Cargando directorio...</p>
+</div>
+
+<div *ngIf="!cargando" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <!-- Filtro de Búsqueda -->
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+                </svg>
+            </span>
+            <input type="text" [(ngModel)]="filtro" placeholder="Buscar especialista por nombre, email o especialidad..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-slate-400 transition-all">
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200">
+                <tr>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500">Profesional</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500">Contacto</th>
+                    <!-- <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500">Especialidad</th> -->
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500">Estado</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 text-right">Opciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let f of fisioterapeutasFiltrados" class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200 font-bold uppercase shrink-0">
+                                {{ f.nombres.charAt(0) }}{{ f.apellidos.charAt(0) }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-500">{{ f.nombres }} {{ f.apellidos }}</p>
+                                <p class="text-xs text-slate-400">ID: {{ f.id || 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <p class="text-slate-500 font-medium text-sm">{{ f.email }}</p>
+                        <p class="text-slate-400 text-xs mt-0.5">{{ f.telefono }}</p>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-red-50 text-red-700 text-xs font-bold border border-red-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            Inactivo
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <!-- Botón Reactivar -->
+                            <button (click)="reactivarFisioterapeuta(f.id)"
+                                class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors px-3 py-1.5 rounded-lg font-bold text-xs"
+                                title="Reactivar Usuario">
+                                Reactivar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="fisioterapeutasFiltrados.length === 0" class="p-12 text-center flex flex-col items-center justify-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-8 h-8 text-slate-400">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+        </div>
+        <p class="text-slate-500 font-medium">
+            {{ fisioterapeutas.length === 0 ? 'No hay fisioterapeutas inactivos en el sistema.' : 'No se encontraron especialistas inactivos que coincidan con la búsqueda.' }}
+        </p>
+    </div>
+</div>
