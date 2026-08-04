@@ -195,7 +195,7 @@
                                             <span class="text-xs text-slate-400 font-normal">({{ ej.series }}x{{
                                                 ej.repeticiones }})</span>
                                         </div>
-                                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full" title="Veces completado">({{ ej.veces_realizado || 0 }})</span>
+                                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full" title="Veces completado">({{ ej.veces_realizado || 0 }} de {{ rut.total_sesiones || 10 }})</span>
                                     </li>
                                 </ul>
                             </div>

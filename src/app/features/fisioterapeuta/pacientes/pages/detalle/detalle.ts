@@ -349,16 +349,46 @@ export class DetallePaciente implements OnInit {
       const labels = this.progreso.map((p: any) => p.nombre);
       const data = this.progreso.map((p: any) => p.veces_realizado);
 
+      const palette = [
+        '#10b981', // emerald-500
+        '#3b82f6', // blue-500
+        '#f59e0b', // amber-500
+        '#ef4444', // red-500
+        '#8b5cf6', // violet-500
+        '#06b6d4', // cyan-500
+        '#ec4899', // pink-500
+        '#f97316', // orange-500
+      ];
+
+      const bgColors = labels.map((_: any, i: number) => palette[i % palette.length]);
+
       this.progressChartData = {
         labels: labels,
         datasets: [
           {
             data: data,
-            backgroundColor: '#10b981', // green-500
-            hoverBackgroundColor: '#059669', // green-600
+            backgroundColor: bgColors,
+            hoverBackgroundColor: bgColors,
             borderRadius: 4
           }
         ]
+      };
+
+      // Actualizar el límite superior del eje Y al total de sesiones
+      this.progressChartOptions = {
+        ...this.progressChartOptions,
+        scales: {
+          ...this.progressChartOptions?.scales,
+          y: {
+            ...(this.progressChartOptions?.scales as any)?.y,
+            max: this.totalSesiones > 0 ? this.totalSesiones : 10,
+            ticks: {
+              ...(this.progressChartOptions?.scales as any)?.y?.ticks,
+              stepSize: 1,
+              autoSkip: false
+            }
+          }
+        }
       };
     }
   }

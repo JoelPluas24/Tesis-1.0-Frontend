@@ -6,9 +6,13 @@ import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SocketService } from '../../../core/services/socket.service';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+
 @Component({
   selector: 'app-mi-rutina',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, BaseChartDirective],
   templateUrl: './mi-rutina.html',
   styleUrl: './mi-rutina.css',
 })
@@ -36,6 +40,28 @@ export class MiRutina implements OnInit {
   diasSemana: string[] = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   fechasCompletadas: Set<string> = new Set();
   today = new Date();
+
+  // Gráfico de Progreso
+  progreso: any[] = [];
+  public progressChartType: ChartType = 'bar';
+  public progressChartData: ChartData<'bar'> = { labels: [], datasets: [] };
+  public progressChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { stepSize: 1, autoSkip: false },
+        title: {
+          display: true,
+          text: 'Sesiones',
+          font: { weight: 'bold' }
+        }
+      }
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  };
 
   get historialActivo() {
     if (!this.rutina) return [];
@@ -90,9 +116,61 @@ export class MiRutina implements OnInit {
         if (this.diasCompletados > this.totalSesionesPlan) {
            this.diasCompletados = this.totalSesionesPlan;
         }
+
+        this.progreso = data.progreso || [];
+        this.setupChartData();
       },
       error: (err: HttpErrorResponse) => console.error("Error al cargar progreso", err)
     });
+  }
+
+  setupChartData() {
+    if (this.progreso && this.progreso.length > 0) {
+      const labels = this.progreso.map((p: any) => p.nombre);
+      const data = this.progreso.map((p: any) => p.veces_realizado);
+
+      const palette = [
+        '#10b981', // emerald-500
+        '#3b82f6', // blue-500
+        '#f59e0b', // amber-500
+        '#ef4444', // red-500
+        '#8b5cf6', // violet-500
+        '#06b6d4', // cyan-500
+        '#ec4899', // pink-500
+        '#f97316', // orange-500
+      ];
+
+      const bgColors = labels.map((_: any, i: number) => palette[i % palette.length]);
+
+      this.progressChartData = {
+        labels: labels,
+        datasets: [
+          {
+            data: data,
+            backgroundColor: bgColors,
+            hoverBackgroundColor: bgColors,
+            borderRadius: 4
+          }
+        ]
+      };
+
+      // Actualizar el límite superior del eje Y al total de sesiones
+      this.progressChartOptions = {
+        ...this.progressChartOptions,
+        scales: {
+          ...this.progressChartOptions?.scales,
+          y: {
+            ...(this.progressChartOptions?.scales as any)?.y,
+            max: this.totalSesionesPlan > 0 ? this.totalSesionesPlan : 10,
+            ticks: {
+              ...(this.progressChartOptions?.scales as any)?.y?.ticks,
+              stepSize: 1,
+              autoSkip: false
+            }
+          }
+        }
+      };
+    }
   }
 
   cargarMiHistorial(pacienteId: number) {
@@ -185,11 +263,7 @@ export class MiRutina implements OnInit {
     this.pacienteService.obtenerMisEjerciciosAcumulados(pacienteId).subscribe({
       next: (res: any) => {
         this.ejercicios = res.map((ej: any) => {
-          let metaDiaria = 1;
-          const match = ej.frecuencia ? ej.frecuencia.match(/\d+/) : null;
-          if (match && parseInt(match[0], 10) > 0) {
-            metaDiaria = parseInt(match[0], 10);
-          }
+          const metaDiaria = 1; // En cada sesión/día, el ejercicio se marca 1 sola vez
           const completadas = ej.vecesCompletadasHoy || 0;
           return {
             ...ej,
