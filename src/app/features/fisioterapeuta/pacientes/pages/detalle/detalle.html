@@ -468,7 +468,7 @@
                                 <td class="py-3 px-4 text-center">
                                     <span
                                         class="inline-flex items-center justify-center min-w-[2.5rem] bg-emerald-100 text-emerald-800 text-sm font-black px-2 py-1 rounded-full border border-emerald-200">
-                                        {{ p.veces_realizado }}
+                                        {{ p.veces_realizado }} de {{ totalSesiones }}
                                     </span>
                                 </td>
                             </tr>
@@ -492,7 +492,7 @@
             <!-- Gráfico Visor -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
                 <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3">Distribución de
-                    Adherencia</h3>
+                    Adherencia por Sesiones</h3>
                 <div class="flex-grow flex justify-center items-center h-64">
                     <canvas *ngIf="progreso.length > 0" baseChart [data]="progressChartData"
                         [options]="progressChartOptions" [type]="progressChartType">

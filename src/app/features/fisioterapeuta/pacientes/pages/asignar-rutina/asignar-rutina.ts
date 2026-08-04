@@ -23,7 +23,7 @@ export class AsignarRutina implements OnInit {
   fechaFin = '';
   totalSesiones = 10;
   observaciones = '';
-  hoy = new Date().toISOString().split('T')[0];
+  hoy = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Guayaquil' }).format(new Date());
 
   // Explicación de Inferencia
   mostrarModalExplicacion: boolean = false;

@@ -45,7 +45,12 @@ export class DetallePaciente implements OnInit {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { stepSize: 1 }
+        ticks: { stepSize: 1 },
+        title: {
+          display: true,
+          text: 'Sesiones',
+          font: { weight: 'bold' }
+        }
       }
     },
     plugins: {
